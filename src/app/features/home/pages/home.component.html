@@ -1,0 +1,192 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Bem-vindo ao <span class="text-primary">É-Livro</span>
+        </h1>
+        <p class="hero-subtitle">
+          Descubra milhares de livros com os melhores preços e promoções imperdíveis.
+          Sua próxima grande leitura está aqui!
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg">
+            Explorar Catálogo
+          </button>
+          <button class="btn btn-outline btn-lg">
+            Ver Ofertas
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="assets/images/hero-books.png" alt="Livros em destaque" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Search Bar -->
+<section class="search-section">
+  <div class="container">
+    <div class="search-bar">
+      <div class="search-input-group">
+        <input 
+          type="text" 
+          placeholder="Pesquisar livros, autores, gêneros..." 
+          class="search-input"
+        />
+        <button class="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Promotional Banners -->
+<section class="promotions" *ngIf="promotions.length > 0">
+  <div class="container">
+    <div class="promotions-grid">
+      <div 
+        class="promotion-card" 
+        *ngFor="let promo of promotions"
+      >
+        <div class="promotion-content">
+          <h3 class="promotion-title">{{ promo.title }}</h3>
+          <h4 class="promotion-subtitle">{{ promo.subtitle }}</h4>
+          <p class="promotion-description">{{ promo.description }}</p>
+          <button class="btn btn-primary">{{ promo.buttonText }}</button>
+        </div>
+        <div class="promotion-image">
+          <img [src]="promo.image" [alt]="promo.title" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+  <div class="container">
+    <h2 class="section-title">Explore por Categoria</h2>
+    <div class="categories-grid">
+      <div 
+        class="category-card" 
+        *ngFor="let category of categories"
+        routerLink="/books"
+        [queryParams]="{ category: category.name }"
+      >
+        <div class="category-icon">{{ category.icon }}</div>
+        <h3 class="category-name">{{ category.name }}</h3>
+        <p class="category-count">{{ category.count }} livros</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Books -->
+<section class="featured-books">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Livros em Destaque</h2>
+      <button class="btn btn-outline" routerLink="/books">
+        Ver Todos
+      </button>
+    </div>
+    
+    <div class="books-grid">
+      <div 
+        class="book-card" 
+        *ngFor="let book of featuredBooks"
+        [routerLink]="['/books', book.id]"
+      >
+        <div class="book-image">
+          <img [src]="book.image" [alt]="book.title" />
+          <div class="book-discount" *ngIf="book.discount">
+            -{{ book.discount }}%
+          </div>
+        </div>
+        
+        <div class="book-info">
+          <h3 class="book-title">{{ book.title }}</h3>
+          <p class="book-author">{{ book.author }}</p>
+          
+          <div class="book-rating">
+            <div class="stars">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    [class.filled]="star <= book.rating">
+                ⭐
+              </span>
+            </div>
+            <span class="rating-text">({{ book.rating }})</span>
+          </div>
+          
+          <div class="book-price">
+            <span class="current-price">R$ {{ book.price.toFixed(2) }}</span>
+            <span class="original-price" *ngIf="book.originalPrice">
+              R$ {{ book.originalPrice.toFixed(2) }}
+            </span>
+          </div>
+          
+          <button class="btn btn-primary add-cart-btn">
+            Adicionar ao Carrinho
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter">
+  <div class="container">
+    <div class="newsletter-content">
+      <h2 class="newsletter-title">Fique por dentro das novidades</h2>
+      <p class="newsletter-subtitle">
+        Receba ofertas exclusivas e lançamentos em primeira mão
+      </p>
+      <div class="newsletter-form">
+        <input 
+          type="email" 
+          placeholder="Seu melhor e-mail" 
+          class="newsletter-input"
+        />
+        <button class="btn btn-primary">
+          Inscrever-se
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits">
+  <div class="container">
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">🚚</div>
+        <h4>Frete Grátis</h4>
+        <p>Em compras acima de R$ 99</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🔒</div>
+        <h4>Compra Segura</h4>
+        <p>Seus dados protegidos</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">↩️</div>
+        <h4>Troca Fácil</h4>
+        <p>30 dias para trocar</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">💳</div>
+        <h4>Parcele sem Juros</h4>
+        <p>Em até 12x no cartão</p>
+      </div>
+    </div>
+  </div>
+</section>

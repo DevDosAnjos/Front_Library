@@ -1,0 +1,182 @@
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo e Nome -->
+      <div class="logo-section">
+        <a routerLink="/" class="logo-link">
+          <div class="logo">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">É-<span class="logo-highlight">Livro</span></span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Barra de Pesquisa -->
+      <div class="search-section">
+        <form (ngSubmit)="onSearch()" class="search-form">
+          <div class="search-input-group">
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              placeholder="Buscar livros, autores, gêneros..."
+              class="search-input"
+              name="search"
+            />
+            <button type="submit" class="search-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Navegação Desktop -->
+      <nav class="desktop-nav">
+        <ul class="nav-links">
+          <li class="nav-item">
+            <a routerLink="/books" routerLinkActive="active" class="nav-link">
+              Catálogo
+            </a>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle">
+              Gêneros
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a 
+                  *ngFor="let genre of popularGenres" 
+                  (click)="goToGenre(genre.id)"
+                  class="dropdown-item"
+                >
+                  {{ genre.name }}
+                </a>
+                <div class="dropdown-divider"></div>
+                <a routerLink="/genres" class="dropdown-item dropdown-item-special">
+                  Ver Todos os Gêneros
+                </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Ações do Usuário -->
+      <div class="user-actions">
+        <!-- Carrinho -->
+        <button (click)="goToCart()" class="action-button cart-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13M9 21C9.6 21 10 21.4 10 22S9.6 23 9 23 8 22.6 8 22 8.4 21 9 21ZM20 21C20.6 21 21 21.4 21 22S20.6 23 20 23 19 22.6 19 22 19.4 21 20 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cart-count" *ngIf="cartItemsCount > 0">{{ cartItemsCount }}</span>
+        </button>
+
+        <!-- Login/Perfil -->
+        <div class="user-menu" *ngIf="!isLoggedIn">
+          <a routerLink="/auth/login" class="btn btn-outline btn-sm">
+            Entrar
+          </a>
+          <a routerLink="/auth/register" class="btn btn-primary btn-sm">
+            Cadastrar
+          </a>
+        </div>
+
+        <div class="user-menu logged-in" *ngIf="isLoggedIn">
+          <div class="user-dropdown">
+            <button class="user-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="user-name">{{ userName }}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="user-dropdown-menu">
+              <a (click)="goToProfile()" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Meu Perfil
+              </a>
+              <a routerLink="/orders" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Meus Pedidos
+              </a>
+              <div class="dropdown-divider"></div>
+              <a (click)="logout()" class="dropdown-item logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="16,17 21,12 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Sair
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Mobile -->
+        <button class="mobile-menu-button" (click)="toggleMenu()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" *ngIf="!isMenuOpen">
+            <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" *ngIf="isMenuOpen">
+            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div class="mobile-menu" [class.open]="isMenuOpen">
+      <div class="mobile-menu-content">
+        <a routerLink="/books" (click)="toggleMenu()" class="mobile-menu-item">
+          Catálogo
+        </a>
+        <a routerLink="/genres" (click)="toggleMenu()" class="mobile-menu-item">
+          Gêneros
+        </a>
+        
+        <div class="mobile-menu-divider"></div>
+        
+        <div class="mobile-user-section" *ngIf="!isLoggedIn">
+          <a routerLink="/auth/login" (click)="toggleMenu()" class="mobile-menu-item">
+            Entrar
+          </a>
+          <a routerLink="/auth/register" (click)="toggleMenu()" class="mobile-menu-item">
+            Cadastrar
+          </a>
+        </div>
+
+        <div class="mobile-user-section" *ngIf="isLoggedIn">
+          <div class="mobile-user-info">
+            <span class="mobile-user-name">{{ userName }}</span>
+          </div>
+          <a (click)="goToProfile(); toggleMenu()" class="mobile-menu-item">
+            Meu Perfil
+          </a>
+          <a routerLink="/orders" (click)="toggleMenu()" class="mobile-menu-item">
+            Meus Pedidos
+          </a>
+          <a (click)="logout(); toggleMenu()" class="mobile-menu-item logout">
+            Sair
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

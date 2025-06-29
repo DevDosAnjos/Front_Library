@@ -1,0 +1,413 @@
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gray-light) 0%, var(--white) 100%);
+  padding: 2rem;
+}
+
+.register-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1200px;
+  width: 100%;
+  background-color: var(--white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  min-height: 700px;
+}
+
+/* Left Section */
+.register-left {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-section {
+  margin-bottom: 3rem;
+}
+
+.brand-logo {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.brand-tagline {
+  font-size: var(--font-size-lg);
+  opacity: 0.9;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.benefit-icon {
+  font-size: 2rem;
+  min-width: 50px;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.benefit-text h4 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.benefit-text p {
+  opacity: 0.8;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+/* Right Section */
+.register-right {
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: var(--gray-dark);
+  font-size: var(--font-size-base);
+}
+
+/* Form Styles */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--secondary-color);
+  font-size: var(--font-size-sm);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 0.875rem 0.875rem 2.75rem;
+  border: 2px solid var(--gray-medium);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
+  background-color: var(--white);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 200, 81, 0.1);
+}
+
+.form-input.error {
+  border-color: var(--error);
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--gray-dark);
+  z-index: 1;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.875rem;
+  background: none;
+  border: none;
+  color: var(--gray-dark);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--border-radius-sm);
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+}
+
+.form-error {
+  color: var(--error);
+  font-size: var(--font-size-sm);
+  margin-top: 0.25rem;
+}
+
+/* Checkbox Styles */
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  margin-top: 0.5rem;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-medium);
+  border-radius: var(--border-radius-sm);
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  color: var(--gray-dark);
+  user-select: none;
+}
+
+.terms-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Register Button */
+.register-button {
+  width: 100%;
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Footer */
+.register-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.login-prompt {
+  color: var(--gray-dark);
+  font-size: var(--font-size-sm);
+  margin-bottom: 1.5rem;
+}
+
+.login-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+.divider {
+  position: relative;
+  margin: 1.5rem 0;
+  color: var(--gray-dark);
+  font-size: var(--font-size-sm);
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--gray-medium);
+  z-index: 0;
+}
+
+.divider span {
+  background-color: var(--white);
+  padding: 0 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Social Register */
+.social-register {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gray-medium);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--white);
+  color: var(--gray-dark);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+}
+
+.btn-social:hover {
+  border-color: var(--gray-dark);
+  transform: translateY(-1px);
+}
+
+.btn-social.google:hover {
+  border-color: #4285F4;
+  color: #4285F4;
+}
+
+.btn-social.facebook:hover {
+  border-color: #1877F2;
+  color: #1877F2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1rem;
+  }
+
+  .register-wrapper {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+
+  .register-left {
+    padding: 2rem;
+    order: 2;
+  }
+
+  .register-right {
+    padding: 2rem;
+    order: 1;
+  }
+
+  .benefits-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .benefit-item {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .benefit-icon {
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
+
+  .social-register {
+    flex-direction: column;
+  }
+
+  .checkbox-wrapper {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .brand-logo {
+    font-size: var(--font-size-3xl);
+  }
+
+  .register-left,
+  .register-right {
+    padding: 1.5rem;
+  }
+
+  .benefits-list {
+    grid-template-columns: 1fr;
+  }
+}

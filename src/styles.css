@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles - É-Livro E-commerce */
+
+/* Importar Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Importar tema personalizado */
+@import './assets/styles/theme.css';
+
+/* Estilos globais adicionais específicos da aplicação */
