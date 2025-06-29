@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  searchQuery = '';
   isMenuOpen = false;
   cartItemsCount = 0;
   isLoggedIn = false;
@@ -43,14 +41,6 @@ export class HeaderComponent implements OnInit {
     // Em uma implementação real, isso viria de um serviço
     const cartItems = this.storageService.getObject<any[]>('cartItems');
     this.cartItemsCount = cartItems ? cartItems.length : 0;
-  }
-
-  onSearch() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/books'], { 
-        queryParams: { search: this.searchQuery } 
-      });
-    }
   }
 
   toggleMenu() {

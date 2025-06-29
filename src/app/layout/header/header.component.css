@@ -1,8 +1,8 @@
 /* Header Styles */
 .header {
-  background: var(--surface-color);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--secondary-color); /* Preto */
+  border-bottom: 1px solid var(--secondary-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -31,71 +31,16 @@
   gap: 0.5rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--primary-color); /* Verde */
 }
 
 .logo-icon {
   font-size: 1.75rem;
+  color: var(--primary-color); /* Verde */
 }
 
 .logo-highlight {
-  color: var(--primary-color);
-}
-
-/* Search Section */
-.search-section {
-  flex: 1;
-  max-width: 600px;
-  margin: 0 2rem;
-}
-
-.search-form {
-  width: 100%;
-}
-
-.search-input-group {
-  position: relative;
-  display: flex;
-  width: 100%;
-}
-
-.search-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--border-color);
-  border-right: none;
-  border-radius: 8px 0 0 8px;
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.3s ease;
-  background: var(--background-color);
-  color: var(--text-color);
-}
-
-.search-input:focus {
-  border-color: var(--primary-color);
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-}
-
-.search-button {
-  padding: 0.75rem 1rem;
-  background: var(--primary-color);
-  color: white;
-  border: 2px solid var(--primary-color);
-  border-radius: 0 8px 8px 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.search-button:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
+  color: var(--primary-color); /* Verde */
 }
 
 /* Desktop Navigation */
@@ -121,7 +66,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0;
-  color: var(--text-color);
+  color: var(--white);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -145,10 +90,10 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--secondary-color);
+  border: 1px solid var(--secondary-light);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   min-width: 200px;
   opacity: 0;
   visibility: hidden;
@@ -170,20 +115,20 @@
 .dropdown-item {
   display: block;
   padding: 0.75rem 1rem;
-  color: var(--text-color);
+  color: var(--white);
   text-decoration: none;
   transition: background-color 0.3s ease;
   cursor: pointer;
 }
 
 .dropdown-item:hover {
-  background: var(--card-color);
+  background: var(--secondary-light);
   color: var(--primary-color);
 }
 
 .dropdown-divider {
   height: 1px;
-  background: var(--border-color);
+  background: var(--secondary-light);
   margin: 0.5rem 0;
 }
 
@@ -204,14 +149,14 @@
   padding: 0.5rem;
   background: transparent;
   border: none;
-  color: var(--text-color);
+  color: var(--white);
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .action-button:hover {
-  background: var(--card-color);
+  background: var(--secondary-light);
   color: var(--primary-color);
 }
 
@@ -223,8 +168,8 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background: var(--accent-color);
-  color: white;
+  background: var(--primary-color);
+  color: var(--white);
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -252,16 +197,17 @@
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--secondary-light);
   border-radius: 8px;
-  color: var(--text-color);
+  color: var(--white);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .user-button:hover {
-  background: var(--card-color);
+  background: var(--secondary-light);
   border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .user-name {
@@ -280,10 +226,10 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--secondary-color);
+  border: 1px solid var(--secondary-light);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   min-width: 180px;
   opacity: 0;
   visibility: hidden;
@@ -361,14 +307,15 @@
   padding: 0.5rem;
   background: transparent;
   border: none;
-  color: var(--text-color);
+  color: var(--white);
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .mobile-menu-button:hover {
-  background: var(--card-color);
+  background: var(--secondary-light);
+  color: var(--primary-color);
 }
 
 .mobile-menu {
@@ -377,9 +324,9 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: var(--surface-color);
-  border-top: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--secondary-color);
+  border-top: 1px solid var(--secondary-light);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
@@ -400,9 +347,9 @@
 .mobile-menu-item {
   display: block;
   padding: 0.75rem 0;
-  color: var(--text-color);
+  color: var(--white);
   text-decoration: none;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--secondary-light);
   transition: color 0.3s ease;
 }
 
@@ -440,10 +387,6 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .search-section {
-    margin: 0 1rem;
-  }
-  
   .nav-links {
     gap: 1rem;
   }
@@ -452,13 +395,6 @@
 @media (max-width: 768px) {
   .header-content {
     padding: 0.75rem 0;
-  }
-  
-  .search-section {
-    order: 3;
-    width: 100%;
-    margin: 0;
-    margin-top: 1rem;
   }
   
   .desktop-nav {
@@ -500,12 +436,6 @@
     font-size: 1.5rem;
   }
   
-  .search-input,
-  .search-button {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.9rem;
-  }
-  
   .user-actions {
     gap: 0.25rem;
   }
@@ -521,12 +451,7 @@
 }
 
 /* Loading States */
-.search-input.loading {
-  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3E.spinner_V8m1%7Btransform-origin:center;animation:spinner_zKoa 2s linear infinite%7D.spinner_V8m1 circle%7Bstroke-linecap:round;animation:spinner_YpZS 1.5s ease-in-out infinite%7D%40keyframes spinner_zKoa%7B100%25%7Btransform:rotate(360deg)%7D%7D%40keyframes spinner_YpZS%7B0%25%7Bstroke-dasharray:0 150;stroke-dashoffset:0%7D47.5%25%7Bstroke-dasharray:42 150;stroke-dashoffset:-16%7D95%25,100%25%7Bstroke-dasharray:42 150;stroke-dashoffset:-59%7D%7D%3C/style%3E%3Cg class='spinner_V8m1'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke='%236b7280' stroke-width='3'%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 16px;
-}
+/* Removido - não mais necessário */
 
 /* Accessibility */
 .sr-only {
@@ -542,7 +467,6 @@
 }
 
 /* Focus states */
-.search-input:focus,
 .action-button:focus,
 .user-button:focus,
 .mobile-menu-button:focus,
@@ -557,7 +481,6 @@
     border-bottom-width: 2px;
   }
   
-  .search-input,
   .user-button {
     border-width: 2px;
   }

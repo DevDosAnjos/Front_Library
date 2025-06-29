@@ -18,7 +18,7 @@ export class RegisterComponent {
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
       acceptTerms: [false, [Validators.requiredTrue]]
@@ -69,17 +69,17 @@ export class RegisterComponent {
     if (field?.errors && field.touched) {
       if (field.errors['required']) {
         switch (fieldName) {
-          case 'username': return 'E-mail é obrigatório';
+          case 'username': return 'Nome de usuário é obrigatório';
           case 'password': return 'Senha é obrigatória';
           case 'confirmPassword': return 'Confirmação de senha é obrigatória';
           case 'acceptTerms': return 'Você deve aceitar os termos';
           default: return 'Campo obrigatório';
         }
       }
-      if (field.errors['email']) {
-        return 'E-mail inválido';
-      }
       if (field.errors['minlength']) {
+        if (fieldName === 'username') {
+          return 'Nome de usuário deve ter pelo menos 3 caracteres';
+        }
         return 'Senha deve ter pelo menos 6 caracteres';
       }
       if (field.errors['requiredTrue']) {

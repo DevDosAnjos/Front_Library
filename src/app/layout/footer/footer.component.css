@@ -1,82 +1,32 @@
 /* Footer Styles */
 .footer {
-  background: var(--surface-color);
-  color: var(--text-color);
-  margin-top: auto;
-}
-
-/* Newsletter Section */
-.newsletter-section {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-  color: white;
-  padding: 3rem 0;
-}
-
-.newsletter-content {
+  background: var(--secondary-color); /* Preto igual ao H.social-link {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-}
-
-.newsletter-text h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.newsletter-text p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 1rem;
-}
-
-.newsletter-form {
-  flex-shrink: 0;
-}
-
-.newsletter-input-group {
-  display: flex;
-  gap: 0.5rem;
-  max-width: 400px;
-}
-
-.newsletter-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
-}
-
-.newsletter-button {
-  padding: 0.75rem 1.5rem;
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--secondary-light);
+  color: var(--gray-medium);
+  border-radius: 50%;
   transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.newsletter-button:hover {
-  background: var(--accent-dark);
-  transform: translateY(-1px);
+  text-decoration: none;
+}color: var(--white); /* Texto branco */
+  margin-top: auto;
+  border-top: 1px solid var(--secondary-light);
 }
 
 /* Main Footer */
 .footer-main {
   padding: 3rem 0 2rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--secondary-light);
 }
 
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
+  gap: 2rem;
+  align-items: start;
 }
 
 .footer-column h4 {
@@ -93,6 +43,21 @@
   font-weight: 600;
 }
 
+/* Section Headings */
+h4, h5 {
+  color: var(--white);
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.1rem;
+}
+
+h5 {
+  font-size: 0.9rem;
+}
+
 /* Brand Section */
 .footer-brand {
   margin-bottom: 2rem;
@@ -105,49 +70,23 @@
   margin-bottom: 1rem;
   font-size: 1.5rem;
   font-weight: 700;
+  color: var(--primary-color); /* Verde igual ao Header */
 }
 
 .footer-logo .logo-icon {
   font-size: 1.75rem;
+  color: var(--primary-color); /* Verde */
 }
 
 .footer-logo .logo-highlight {
-  color: var(--primary-color);
+  color: var(--primary-color); /* Verde */
 }
 
 .footer-description {
-  color: var(--text-muted);
+  color: var(--gray-medium);
   line-height: 1.6;
   margin: 0;
-}
-
-/* Social Media */
-.social-media h4 {
-  margin-bottom: 1rem;
-}
-
-.social-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--card-color);
-  color: var(--text-muted);
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.social-link:hover {
-  background: var(--primary-color);
-  color: white;
-  transform: translateY(-2px);
+  font-size: 0.9rem;
 }
 
 /* Footer Links */
@@ -162,7 +101,7 @@
 }
 
 .footer-links a {
-  color: var(--text-muted);
+  color: var(--gray-medium);
   text-decoration: none;
   transition: color 0.3s ease;
   font-size: 0.9rem;
@@ -172,157 +111,11 @@
   color: var(--primary-color);
 }
 
-/* Contact Info */
-.contact-info {
-  margin-top: 1.5rem;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.contact-item svg {
-  color: var(--primary-color);
-  flex-shrink: 0;
-}
-
-/* Bottom Info Section */
-.footer-bottom-info {
-  padding: 2rem 0;
-  background: var(--card-color);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.bottom-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
-}
-
-.info-section h5 {
-  margin: 0 0 1rem 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Payment Methods */
-.payment-methods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.payment-method {
-  background: white;
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem;
-  min-width: 50px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.payment-icon {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-color);
-}
-
-.payment-icon.visa {
-  color: #1a1f71;
-}
-
-.payment-icon.mastercard {
-  color: #eb001b;
-}
-
-.payment-icon.elo {
-  color: #ffcb05;
-}
-
-.payment-icon.pix {
-  color: var(--primary-color);
-}
-
-.payment-icon.boleto {
-  color: var(--text-muted);
-}
-
-/* Security Badges */
-.security-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.security-badge {
-  background: var(--background-color);
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem;
-  min-width: 60px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.security-icon {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-.security-icon.ssl svg {
-  color: #28a745;
-}
-
-.security-icon.site-blindado svg {
-  color: #007bff;
-}
-
-.security-icon.reclame-aqui {
-  background: #e31e24;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.6rem;
-}
-
-/* Business Info */
-.business-info {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-.cnpj {
-  margin: 0 0 0.5rem 0;
-  font-weight: 500;
-}
-
-.address {
-  margin: 0;
-}
-
 /* Footer Bottom */
 .footer-bottom {
   padding: 1.5rem 0;
-  background: var(--surface-color);
-  border-top: 1px solid var(--border-color);
+  background: var(--secondary-color); /* Manter preto */
+  border-top: 1px solid var(--secondary-light);
 }
 
 .footer-bottom-content {
@@ -334,7 +127,7 @@
 
 .copyright {
   margin: 0;
-  color: var(--text-muted);
+  color: var(--gray-medium);
   font-size: 0.875rem;
 }
 
@@ -344,7 +137,7 @@
 }
 
 .footer-bottom-links a {
-  color: var(--text-muted);
+  color: var(--gray-medium);
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.3s ease;
@@ -360,32 +153,12 @@
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
-  
-  .bottom-info-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 @media (max-width: 768px) {
-  .newsletter-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 1.5rem;
-  }
-  
-  .newsletter-input-group {
-    width: 100%;
-    max-width: none;
-  }
-  
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
-  }
-  
-  .bottom-info-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
   }
   
   .footer-bottom-content {
@@ -393,61 +166,15 @@
     text-align: center;
     gap: 1rem;
   }
-  
-  .social-links {
-    justify-content: center;
-  }
-  
-  .payment-methods,
-  .security-badges {
-    justify-content: center;
-  }
 }
 
 @media (max-width: 480px) {
-  .newsletter-section {
-    padding: 2rem 0;
-  }
-  
-  .newsletter-text h3 {
-    font-size: 1.25rem;
-  }
-  
-  .newsletter-input-group {
-    flex-direction: column;
-  }
-  
   .footer-main {
     padding: 2rem 0 1.5rem 0;
   }
   
-  .footer-bottom-info {
-    padding: 1.5rem 0;
-  }
-  
-  .payment-methods,
-  .security-badges {
-    gap: 0.5rem;
-  }
-  
-  .payment-method,
-  .security-badge {
-    min-width: 45px;
-    height: 30px;
-    padding: 0.25rem;
-  }
-}
-
-/* Dark Theme Adjustments */
-@media (prefers-color-scheme: dark) {
-  .payment-method,
-  .security-badge {
-    background: var(--card-color);
-    border-color: var(--border-color);
-  }
-  
-  .payment-icon {
-    filter: brightness(1.2);
+  .footer-grid {
+    gap: 1.5rem;
   }
 }
 
@@ -472,15 +199,4 @@
 .footer-links a:hover::after,
 .footer-bottom-links a:hover::after {
   width: 100%;
-}
-
-/* Focus States */
-.newsletter-input:focus {
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
-}
-
-.newsletter-button:focus,
-.social-link:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
 }

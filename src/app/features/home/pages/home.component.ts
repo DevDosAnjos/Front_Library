@@ -40,44 +40,36 @@ export class HomeComponent {
       image: 'assets/images/books/senhora.jpg',
       rating: 4.7,
       discount: 33
-    },
-    {
-      id: 4,
-      title: 'Iracema',
-      author: 'José de Alencar',
-      price: 22.90,
-      originalPrice: 32.90,
-      image: 'assets/images/books/iracema.jpg',
-      rating: 4.5,
-      discount: 30
     }
   ];
 
+  // Gêneros reais do backend - selecionamos alguns principais para exibir na Home
   categories = [
-    { name: 'Ficção', icon: '📚', count: 1250 },
-    { name: 'Romance', icon: '💕', count: 890 },
-    { name: 'Suspense', icon: '🔍', count: 456 },
-    { name: 'Fantasia', icon: '🧙‍♂️', count: 678 },
-    { name: 'Biografia', icon: '👤', count: 234 },
-    { name: 'História', icon: '🏛️', count: 345 },
-    { name: 'Ciência', icon: '🔬', count: 567 },
-    { name: 'Infantil', icon: '🧸', count: 789 }
+    { id: 1, name: 'Ficção Científica', icon: '�', count: 4 },
+    { id: 2, name: 'Fantasia', icon: '🧙‍♂️', count: 5 },
+    { id: 3, name: 'Suspense e Mistério', icon: '🔍', count: 3 },
+    { id: 4, name: 'Romance', icon: '💕', count: 6 },
+    { id: 5, name: 'Literatura Clássica', icon: '�', count: 8 },
+    { id: 6, name: 'Ficção Histórica', icon: '🏛️', count: 2 },
+    { id: 7, name: 'Biografia', icon: '�', count: 3 },
+    { id: 8, name: 'História', icon: '📜', count: 4 }
   ];
 
-  promotions = [
-    {
-      title: 'Black Friday dos Livros',
-      subtitle: 'Até 70% OFF em toda loja',
-      description: 'Aproveite nossa mega promoção',
-      image: 'assets/images/banners/black-friday.jpg',
-      buttonText: 'Ver Ofertas'
-    },
-    {
-      title: 'Clássicos Brasileiros',
-      subtitle: 'Coleção completa com desconto',
-      description: 'Os melhores da literatura nacional',
-      image: 'assets/images/banners/classicos.jpg',
-      buttonText: 'Explorar'
-    }
+  // Todos os 12 gêneros reais do backend
+  allGenres = [
+    { id: 1, name: 'Ficção Científica', icon: '🚀', count: 4 },
+    { id: 2, name: 'Fantasia', icon: '🧙‍♂️', count: 5 },
+    { id: 3, name: 'Suspense e Mistério', icon: '🔍', count: 3 },
+    { id: 4, name: 'Romance', icon: '💕', count: 6 },
+    { id: 5, name: 'Literatura Clássica', icon: '📚', count: 8 },
+    { id: 6, name: 'Biografias e Memórias', icon: '👤', count: 3 },
+    { id: 7, name: 'História', icon: '📜', count: 4 },
+    { id: 8, name: 'Tecnologia e Ciência', icon: '🔬', count: 2 },
+    { id: 9, name: 'Mangás e HQs', icon: '📖', count: 1 },
+    { id: 10, name: 'Autoajuda', icon: '💪', count: 5 },
+    { id: 11, name: 'Infantojuvenil', icon: '🧸', count: 7 },
+    { id: 12, name: 'Gastronomia', icon: '🍳', count: 2 }
   ];
+
+  promotions: any[] = []; // Removido as promoções
 }
