@@ -1,0 +1,318 @@
+<!-- ==========================================================================
+     USERS MANAGEMENT COMPONENT TEMPLATE
+     CRUD completo para gerenciamento de usuários
+     ========================================================================== -->
+
+<div class="users-management">
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <div class="header-info">
+        <button class="btn btn-back" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Voltar ao Dashboard
+        </button>
+        <h1 class="page-title">
+          <i class="fas fa-users"></i>
+          Gerenciamento de Usuários
+        </h1>
+        <p class="page-subtitle">{{ filteredUsers.length }} usuários encontrados</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openCreateForm()">
+          <i class="fas fa-user-plus"></i>
+          Novo Usuário
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando usuários...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="management-content">
+    
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="search-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            placeholder="Buscar por nome, email ou username..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            class="search-input"
+          >
+        </div>
+      </div>
+      
+      <div class="filter-container">
+        <select 
+          [(ngModel)]="filterRole"
+          (change)="onFilterChange()"
+          class="filter-select"
+        >
+          <option value="all">Todos os Tipos</option>
+          <option value="USER">Usuários</option>
+          <option value="ADMIN">Administradores</option>
+        </select>
+      </div>
+
+      <div class="filter-container">
+        <select 
+          [(ngModel)]="filterActive"
+          (change)="onFilterChange()"
+          class="filter-select"
+        >
+          <option value="all">Todos os Status</option>
+          <option value="active">Apenas Ativos</option>
+          <option value="inactive">Apenas Inativos</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="users-list">
+      <div *ngIf="filteredUsers.length === 0" class="empty-state">
+        <i class="fas fa-users"></i>
+        <h3>Nenhum usuário encontrado</h3>
+        <p>Não foram encontrados usuários com os filtros aplicados.</p>
+        <button class="btn btn-primary" (click)="openCreateForm()">
+          <i class="fas fa-user-plus"></i>
+          Criar Primeiro Usuário
+        </button>
+      </div>
+
+      <div *ngIf="filteredUsers.length > 0" class="users-grid">
+        <div 
+          *ngFor="let user of filteredUsers" 
+          class="user-card"
+          [class.inactive]="!user.isActive"
+        >
+          <div class="user-header">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <h3 class="user-name">{{ user.fullName }}</h3>
+              <p class="user-username">{{ '@' + user.username }}</p>
+              <p class="user-email">{{ user.email }}</p>
+            </div>
+            <div class="user-badges">
+              <span class="user-role" [class]="getRoleClass(user.role)">
+                {{ getRoleText(user.role) }}
+              </span>
+              <span class="user-status" [class.active]="user.isActive">
+                <i class="fas fa-circle"></i>
+                {{ user.isActive ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="user-body">
+            <div class="user-stats">
+              <div class="stat-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>{{ user.ordersCount || 0 }} pedidos</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-calendar"></i>
+                <span>Desde {{ user.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="stat-item" *ngIf="user.lastLogin">
+                <i class="fas fa-clock"></i>
+                <span>Último login: {{ user.lastLogin | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="user-actions">
+            <button 
+              class="btn-icon btn-edit" 
+              (click)="openEditForm(user)"
+              title="Editar usuário"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button 
+              class="btn-icon btn-password" 
+              (click)="resetPassword(user)"
+              title="Resetar senha"
+            >
+              <i class="fas fa-key"></i>
+            </button>
+            <button 
+              class="btn-icon btn-toggle" 
+              (click)="toggleUserStatus(user)"
+              [title]="user.isActive ? 'Desativar usuário' : 'Ativar usuário'"
+            >
+              <i class="fas" [class.fa-eye-slash]="user.isActive" [class.fa-eye]="!user.isActive"></i>
+            </button>
+            <button 
+              class="btn-icon btn-delete" 
+              (click)="deleteUser(user)"
+              title="Excluir usuário"
+              [disabled]="user.role === 'ADMIN' || (user.ordersCount && user.ordersCount > 0)"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-user"></i>
+          {{ editingUser ? 'Editar Usuário' : 'Novo Usuário' }}
+        </h2>
+        <button class="btn-close" (click)="closeForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form class="user-form" (ngSubmit)="saveUser()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userName" class="form-label">
+              Nome Completo <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="userName"
+              [(ngModel)]="userForm.fullName"
+              name="userName"
+              class="form-input"
+              placeholder="Ex: João Silva Santos"
+              required
+              maxlength="100"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userUsername" class="form-label">
+              Nome de Usuário <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="userUsername"
+              [(ngModel)]="userForm.username"
+              name="userUsername"
+              class="form-input"
+              placeholder="Ex: joao.silva"
+              required
+              maxlength="50"
+              pattern="[a-zA-Z0-9._-]+"
+            >
+          </div>
+          <div class="form-group">
+            <label for="userEmail" class="form-label">
+              Email <span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="userEmail"
+              [(ngModel)]="userForm.email"
+              name="userEmail"
+              class="form-input"
+              placeholder="joao@email.com"
+              required
+              maxlength="100"
+            >
+          </div>
+        </div>
+
+        <div class="form-row" *ngIf="!editingUser">
+          <div class="form-group">
+            <label for="userPassword" class="form-label">
+              Senha <span class="required">*</span>
+            </label>
+            <input 
+              type="password" 
+              id="userPassword"
+              [(ngModel)]="userForm.password"
+              name="userPassword"
+              class="form-input"
+              placeholder="Mínimo 6 caracteres"
+              required
+              minlength="6"
+            >
+          </div>
+          <div class="form-group">
+            <label for="userConfirmPassword" class="form-label">
+              Confirmar Senha <span class="required">*</span>
+            </label>
+            <input 
+              type="password" 
+              id="userConfirmPassword"
+              [(ngModel)]="userForm.confirmPassword"
+              name="userConfirmPassword"
+              class="form-input"
+              placeholder="Repita a senha"
+              required
+              minlength="6"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userRole" class="form-label">Tipo de Usuário</label>
+            <select 
+              id="userRole"
+              [(ngModel)]="userForm.role"
+              name="userRole"
+              class="form-select"
+            >
+              <option value="USER">Usuário</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="userForm.isActive"
+                name="userActive"
+                class="form-checkbox"
+              >
+              <span class="checkbox-text">Usuário ativo</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeForm()"
+            [disabled]="isSaving"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="isSaving || !userForm.username.trim() || !userForm.email.trim() || !userForm.fullName.trim()"
+          >
+            <i class="fas fa-spinner fa-spin" *ngIf="isSaving"></i>
+            <i class="fas fa-save" *ngIf="!isSaving"></i>
+            {{ isSaving ? 'Salvando...' : (editingUser ? 'Atualizar' : 'Criar') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

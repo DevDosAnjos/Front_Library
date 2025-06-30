@@ -1,0 +1,217 @@
+<!-- ==========================================================================
+     GENRES MANAGEMENT COMPONENT TEMPLATE
+     CRUD completo para gerenciamento de gêneros
+     ========================================================================== -->
+
+<div class="genres-management">
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <div class="header-info">
+        <button class="btn btn-back" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Voltar ao Dashboard
+        </button>
+        <h1 class="page-title">
+          <i class="fas fa-tags"></i>
+          Gerenciamento de Gêneros
+        </h1>
+        <p class="page-subtitle">{{ filteredGenres.length }} gêneros encontrados</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openCreateForm()">
+          <i class="fas fa-plus"></i>
+          Novo Gênero
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando gêneros...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="management-content">
+    
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="search-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            placeholder="Buscar por nome ou descrição..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            class="search-input"
+          >
+        </div>
+      </div>
+      
+      <div class="filter-container">
+        <select 
+          [(ngModel)]="filterActive"
+          (change)="onFilterChange()"
+          class="filter-select"
+        >
+          <option value="all">Todos os Status</option>
+          <option value="active">Apenas Ativos</option>
+          <option value="inactive">Apenas Inativos</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Genres List -->
+    <div class="genres-list">
+      <div *ngIf="filteredGenres.length === 0" class="empty-state">
+        <i class="fas fa-tags"></i>
+        <h3>Nenhum gênero encontrado</h3>
+        <p>Não foram encontrados gêneros com os filtros aplicados.</p>
+        <button class="btn btn-primary" (click)="openCreateForm()">
+          <i class="fas fa-plus"></i>
+          Criar Primeiro Gênero
+        </button>
+      </div>
+
+      <div *ngIf="filteredGenres.length > 0" class="genres-grid">
+        <div 
+          *ngFor="let genre of filteredGenres" 
+          class="genre-card"
+          [class.inactive]="!genre.isActive"
+        >
+          <div class="genre-header">
+            <div class="genre-info">
+              <h3 class="genre-name">{{ genre.name }}</h3>
+              <span class="genre-status" [class.active]="genre.isActive">
+                <i class="fas fa-circle"></i>
+                {{ genre.isActive ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+            <div class="genre-actions">
+              <button 
+                class="btn-icon btn-edit" 
+                (click)="openEditForm(genre)"
+                title="Editar gênero"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button 
+                class="btn-icon btn-toggle" 
+                (click)="toggleGenreStatus(genre)"
+                [title]="genre.isActive ? 'Desativar gênero' : 'Ativar gênero'"
+              >
+                <i class="fas" [class.fa-eye-slash]="genre.isActive" [class.fa-eye]="!genre.isActive"></i>
+              </button>
+              <button 
+                class="btn-icon btn-delete" 
+                (click)="deleteGenre(genre)"
+                title="Excluir gênero"
+                [disabled]="genre.booksCount && genre.booksCount > 0"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="genre-body">
+            <p class="genre-description">{{ genre.description || 'Sem descrição' }}</p>
+            
+            <div class="genre-stats">
+              <div class="stat-item">
+                <i class="fas fa-book"></i>
+                <span>{{ genre.booksCount || 0 }} livros</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ genre.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-tags"></i>
+          {{ editingGenre ? 'Editar Gênero' : 'Novo Gênero' }}
+        </h2>
+        <button class="btn-close" (click)="closeForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form class="genre-form" (ngSubmit)="saveGenre()">
+        <div class="form-group">
+          <label for="genreName" class="form-label">
+            Nome do Gênero <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="genreName"
+            [(ngModel)]="genreForm.name"
+            name="genreName"
+            class="form-input"
+            placeholder="Ex: Romance, Ficção Científica..."
+            required
+            maxlength="50"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="genreDescription" class="form-label">Descrição</label>
+          <textarea 
+            id="genreDescription"
+            [(ngModel)]="genreForm.description"
+            name="genreDescription"
+            class="form-textarea"
+            placeholder="Descreva o gênero literário..."
+            rows="3"
+            maxlength="200"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="genreForm.isActive"
+              name="genreActive"
+              class="form-checkbox"
+            >
+            <span class="checkbox-text">Gênero ativo</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeForm()"
+            [disabled]="isSaving"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="isSaving || !genreForm.name.trim()"
+          >
+            <i class="fas fa-spinner fa-spin" *ngIf="isSaving"></i>
+            <i class="fas fa-save" *ngIf="!isSaving"></i>
+            {{ isSaving ? 'Salvando...' : (editingGenre ? 'Atualizar' : 'Criar') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

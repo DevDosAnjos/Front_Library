@@ -145,7 +145,6 @@
 .card-icon.genres { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
 .card-icon.users { background: linear-gradient(135deg, #45b7d1, #96c93d); }
 .card-icon.orders { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.card-icon.reports { background: linear-gradient(135deg, #4facfe, #00f2fe); }
 
 .card-info .card-title {
   font-size: 1.3rem;

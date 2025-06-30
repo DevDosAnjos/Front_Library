@@ -19,8 +19,7 @@ export class AdminDashboardComponent implements OnInit {
     totalBooks: 0,
     totalGenres: 0,
     totalUsers: 0,
-    totalOrders: 0,
-    totalSales: 0
+    totalOrders: 0
   };
   
   isLoading = true;
@@ -75,7 +74,6 @@ export class AdminDashboardComponent implements OnInit {
     this.entityStats.totalGenres = 12;
     this.entityStats.totalUsers = 248;
     this.entityStats.totalOrders = 89;
-    this.entityStats.totalSales = 15670000; // Em centavos
   }
 
   formatPrice(price: number): string {
@@ -97,10 +95,6 @@ export class AdminDashboardComponent implements OnInit {
 
   navigateToOrders() {
     this.router.navigate(['/admin/orders']);
-  }
-
-  navigateToReports() {
-    this.router.navigate(['/admin/reports']);
   }
 
   logout() {

@@ -24,17 +24,12 @@ export const routes: Routes = [
   },
   {
     path: 'users',
-    loadComponent: () => import('./pages/users/users-management.component').then(m => m.UsersManagementComponent),
+    loadComponent: () => import('./pages/users/users-management.component').then(m => m.UsersManagementComponentFixed),
     canActivate: [AdminGuard]
   },
   {
     path: 'orders',
     loadComponent: () => import('./pages/orders/orders-management.component').then(m => m.OrdersManagementComponent),
-    canActivate: [AdminGuard]
-  },
-  {
-    path: 'reports',
-    loadComponent: () => import('./pages/reports/reports.component').then(m => m.ReportsComponent),
     canActivate: [AdminGuard]
   }
 ];

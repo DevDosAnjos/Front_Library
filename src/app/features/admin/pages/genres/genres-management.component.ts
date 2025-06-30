@@ -1,82 +1,46 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { StorageService } from '../../../../core/services/storage.service';
+
+interface Genre {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  createdAt: Date;
+  booksCount?: number;
+}
 
 @Component({
   selector: 'app-genres-management',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <div class="genres-management">
-      <div class="management-header">
-        <div class="header-content">
-          <div class="header-info">
-            <button class="btn btn-back" (click)="goBack()">
-              <i class="fas fa-arrow-left"></i>
-              Voltar ao Dashboard
-            </button>
-            <h1 class="page-title">
-              <i class="fas fa-tags"></i>
-              Gerenciamento de Gêneros
-            </h1>
-            <p class="page-subtitle">Em desenvolvimento...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .genres-management {
-      min-height: calc(100vh - 120px);
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      color: #ffffff;
-    }
-    .management-header {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-      border-bottom: 2px solid #00ff66;
-      padding: 2rem 0;
-    }
-    .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-    .page-title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #00ff66;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .page-subtitle {
-      color: #cccccc;
-      font-size: 1rem;
-      margin: 0;
-    }
-    .btn-back {
-      background: transparent;
-      color: #cccccc;
-      border: 2px solid #666666;
-      margin-bottom: 1rem;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-    .btn-back:hover {
-      border-color: #00ff66;
-      color: #00ff66;
-    }
-  `]
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './genres-management.component.html',
+  styleUrl: './genres-management.component.css'
 })
 export class GenresManagementComponent implements OnInit {
+  genres: Genre[] = [];
+  filteredGenres: Genre[] = [];
+  
+  // Form states
+  showForm = false;
+  editingGenre: Genre | null = null;
+  isLoading = true;
+  isSaving = false;
+  
+  // Form data
+  genreForm = {
+    name: '',
+    description: '',
+    isActive: true
+  };
+  
+  // Filters and search
+  searchTerm = '';
+  filterActive = 'all'; // 'all', 'active', 'inactive'
+
   constructor(
     private router: Router,
     private storageService: StorageService
@@ -84,6 +48,7 @@ export class GenresManagementComponent implements OnInit {
 
   ngOnInit() {
     this.checkAdminAuth();
+    this.loadGenres();
   }
 
   checkAdminAuth() {
@@ -95,6 +60,168 @@ export class GenresManagementComponent implements OnInit {
         queryParams: { message: 'Acesso restrito a administradores.' }
       });
       return;
+    }
+  }
+
+  loadGenres() {
+    this.isLoading = true;
+    
+    // Simular dados de gêneros
+    setTimeout(() => {
+      this.genres = [
+        {
+          id: 1,
+          name: 'Romance',
+          description: 'Histórias de amor e relacionamentos',
+          isActive: true,
+          createdAt: new Date('2024-01-15'),
+          booksCount: 25
+        },
+        {
+          id: 2,
+          name: 'Ficção Científica',
+          description: 'Histórias futuristas e tecnológicas',
+          isActive: true,
+          createdAt: new Date('2024-01-16'),
+          booksCount: 18
+        },
+        {
+          id: 3,
+          name: 'Mistério',
+          description: 'Histórias de suspense e investigação',
+          isActive: true,
+          createdAt: new Date('2024-01-17'),
+          booksCount: 12
+        },
+        {
+          id: 4,
+          name: 'Fantasia',
+          description: 'Mundos mágicos e criaturas míticas',
+          isActive: true,
+          createdAt: new Date('2024-01-18'),
+          booksCount: 22
+        },
+        {
+          id: 5,
+          name: 'Terror',
+          description: 'Histórias de horror e suspense',
+          isActive: false,
+          createdAt: new Date('2024-01-19'),
+          booksCount: 8
+        }
+      ];
+      
+      this.applyFilters();
+      this.isLoading = false;
+    }, 800);
+  }
+
+  applyFilters() {
+    this.filteredGenres = this.genres.filter(genre => {
+      const matchesSearch = genre.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                           genre.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesFilter = this.filterActive === 'all' || 
+                           (this.filterActive === 'active' && genre.isActive) ||
+                           (this.filterActive === 'inactive' && !genre.isActive);
+      
+      return matchesSearch && matchesFilter;
+    });
+  }
+
+  onSearchChange() {
+    this.applyFilters();
+  }
+
+  onFilterChange() {
+    this.applyFilters();
+  }
+
+  openCreateForm() {
+    this.editingGenre = null;
+    this.genreForm = {
+      name: '',
+      description: '',
+      isActive: true
+    };
+    this.showForm = true;
+  }
+
+  openEditForm(genre: Genre) {
+    this.editingGenre = genre;
+    this.genreForm = {
+      name: genre.name,
+      description: genre.description,
+      isActive: genre.isActive
+    };
+    this.showForm = true;
+  }
+
+  closeForm() {
+    this.showForm = false;
+    this.editingGenre = null;
+    this.genreForm = {
+      name: '',
+      description: '',
+      isActive: true
+    };
+  }
+
+  saveGenre() {
+    if (!this.genreForm.name.trim()) {
+      alert('Nome do gênero é obrigatório!');
+      return;
+    }
+
+    this.isSaving = true;
+
+    setTimeout(() => {
+      if (this.editingGenre) {
+        // Editar gênero existente
+        const index = this.genres.findIndex(g => g.id === this.editingGenre!.id);
+        if (index !== -1) {
+          this.genres[index] = {
+            ...this.genres[index],
+            name: this.genreForm.name.trim(),
+            description: this.genreForm.description.trim(),
+            isActive: this.genreForm.isActive
+          };
+        }
+      } else {
+        // Criar novo gênero
+        const newGenre: Genre = {
+          id: Math.max(...this.genres.map(g => g.id)) + 1,
+          name: this.genreForm.name.trim(),
+          description: this.genreForm.description.trim(),
+          isActive: this.genreForm.isActive,
+          createdAt: new Date(),
+          booksCount: 0
+        };
+        this.genres.push(newGenre);
+      }
+
+      this.applyFilters();
+      this.closeForm();
+      this.isSaving = false;
+    }, 1000);
+  }
+
+  toggleGenreStatus(genre: Genre) {
+    if (confirm(`Deseja ${genre.isActive ? 'desativar' : 'ativar'} o gênero "${genre.name}"?`)) {
+      genre.isActive = !genre.isActive;
+      this.applyFilters();
+    }
+  }
+
+  deleteGenre(genre: Genre) {
+    if (genre.booksCount && genre.booksCount > 0) {
+      alert(`Não é possível excluir o gênero "${genre.name}" pois existem ${genre.booksCount} livros vinculados a ele.`);
+      return;
+    }
+
+    if (confirm(`Tem certeza que deseja excluir o gênero "${genre.name}"? Esta ação não pode ser desfeita.`)) {
+      this.genres = this.genres.filter(g => g.id !== genre.id);
+      this.applyFilters();
     }
   }
 
