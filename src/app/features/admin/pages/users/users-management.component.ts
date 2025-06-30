@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { StorageService } from '../../../../core/services/storage.service';
-import { SimpleAuthService } from '../../../../core/services/simple-auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface User {
   id: number;
@@ -53,7 +53,7 @@ export class UsersManagementComponentFixed implements OnInit {
   constructor(
     private router: Router,
     private storageService: StorageService,
-    private authService: SimpleAuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {

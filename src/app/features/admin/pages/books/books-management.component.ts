@@ -6,7 +6,7 @@ import { RouterModule, Router } from '@angular/router';
 import { BookService } from '../../../../core/services/book.service';
 import { GenderService } from '../../../../core/services/gender.service';
 import { StorageService } from '../../../../core/services/storage.service';
-import { Book, Gender } from '../../../../core/models';
+import { Book, BookAdmin, Gender } from '../../../../core/models/api-models';
 
 @Component({
   selector: 'app-books-management',
@@ -16,12 +16,12 @@ import { Book, Gender } from '../../../../core/models';
   styleUrl: './books-management.component.css'
 })
 export class BooksManagementComponent implements OnInit {
-  books: Book[] = [];
+  books: BookAdmin[] = [];
   genres: Gender[] = [];
-  filteredBooks: Book[] = [];
+  filteredBooks: BookAdmin[] = [];
   
   bookForm: FormGroup;
-  editingBook: Book | null = null;
+  editingBook: BookAdmin | null = null;
   showForm = false;
   isLoading = true;
   isSaving = false;
@@ -54,7 +54,7 @@ export class BooksManagementComponent implements OnInit {
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: [0, [Validators.required, Validators.min(1)]],
       stock: [0, [Validators.required, Validators.min(0)]],
-      gender_id: ['', [Validators.required]],
+      genderID: ['', [Validators.required]],
       imageUrl: [''],
       isbn: [''],
       publisher: [''],
@@ -114,7 +114,7 @@ export class BooksManagementComponent implements OnInit {
     
     // Filtro por gênero
     if (this.selectedGenre) {
-      filtered = filtered.filter(book => book.gender_id.toString() === this.selectedGenre);
+      filtered = filtered.filter(book => book.genderID.toString() === this.selectedGenre);
     }
     
     // Ordenação
@@ -186,25 +186,25 @@ export class BooksManagementComponent implements OnInit {
     }
   }
 
-  openForm(book?: Book) {
+  openForm(book?: BookAdmin) {
     this.editingBook = book || null;
     this.showForm = true;
     
     if (book) {
       this.bookForm.patchValue({
         name: book.name,
-        author: book.author,
-        description: book.description,
+        author: book.author || '',
+        description: book.description || '',
         price: book.price / 100, // Converter de centavos para reais
         stock: book.stock || 0,
-        gender_id: book.gender_id,
+        genderID: book.genderID,
         imageUrl: book.imageUrl || '',
         isbn: book.isbn || '',
         publisher: book.publisher || '',
-        publishYear: book.publishYear || new Date().getFullYear(),
+        publishedYear: book.publishYear || new Date().getFullYear(),
         pages: book.pages || 0,
         language: 'Português',
-        active: book.status_stock === 'IN_STOCK'
+        active: book.statusStock === 'IN_STOCK'
       });
     } else {
       this.bookForm.reset({
@@ -213,7 +213,7 @@ export class BooksManagementComponent implements OnInit {
         description: '',
         price: 0,
         stock: 0,
-        gender_id: '',
+        genderID: '',
         imageUrl: '',
         isbn: '',
         publisher: '',
@@ -236,19 +236,19 @@ export class BooksManagementComponent implements OnInit {
       this.isSaving = true;
       const formData = this.bookForm.value;
       
-      const bookData: Partial<Book> = {
+      const bookData: Partial<BookAdmin> = {
         name: formData.name,
         author: formData.author,
         description: formData.description,
         price: Math.round(formData.price * 100), // Converter para centavos
         stock: formData.stock,
-        gender_id: parseInt(formData.gender_id),
+        genderID: parseInt(formData.genderID),
         imageUrl: formData.imageUrl,
         isbn: formData.isbn,
         publisher: formData.publisher,
         publishYear: formData.publishedYear,
         pages: formData.pages,
-        status_stock: formData.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
+        statusStock: formData.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
       };
 
       // Simular salvamento
@@ -262,12 +262,12 @@ export class BooksManagementComponent implements OnInit {
         } else {
           // Criar novo livro
           const newId = Math.max(...this.books.map(b => b.id)) + 1;
-          const newBook: Book = {
+          const newBook: BookAdmin = {
             id: newId,
             name: bookData.name!,
             price: bookData.price!,
-            gender_id: bookData.gender_id!,
-            status_stock: bookData.status_stock!,
+            genderID: bookData.genderID!,
+            statusStock: bookData.statusStock!,
             author: bookData.author,
             description: bookData.description,
             imageUrl: bookData.imageUrl,
@@ -289,7 +289,7 @@ export class BooksManagementComponent implements OnInit {
     }
   }
 
-  deleteBook(book: Book) {
+  deleteBook(book: BookAdmin) {
     if (confirm(`Tem certeza que deseja excluir o livro "${book.name}"?`)) {
       const index = this.books.findIndex(b => b.id === book.id);
       if (index >= 0) {
@@ -299,11 +299,11 @@ export class BooksManagementComponent implements OnInit {
     }
   }
 
-  toggleBookStatus(book: Book) {
+  toggleBookStatus(book: BookAdmin) {
     const index = this.books.findIndex(b => b.id === book.id);
     if (index >= 0) {
       // Alternar status entre IN_STOCK e OUT_OF_STOCK
-      this.books[index].status_stock = this.books[index].status_stock === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
+      this.books[index].statusStock = this.books[index].statusStock === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
       this.applyFilters();
     }
   }
@@ -343,7 +343,7 @@ export class BooksManagementComponent implements OnInit {
       description: 'Descrição',
       price: 'Preço',
       stock: 'Estoque',
-      gender_id: 'Gênero',
+      genderID: 'Gênero',
       isbn: 'ISBN',
       publisher: 'Editora',
       publishedYear: 'Ano de publicação',

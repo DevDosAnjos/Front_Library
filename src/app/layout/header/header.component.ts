@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { StorageService } from '../../core/services/storage.service';
 import { CartService } from '../../core/services/cart.service';
-import { SimpleAuthService } from '../../core/services/simple-auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models';
 
 @Component({
@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private cartService: CartService,
-    private authService: SimpleAuthService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -52,11 +52,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subscribeToAuthChanges() {
     this.authSubscription = this.authService.currentUser$.subscribe({
       next: (user: any) => {
+        const wasLoggedIn = this.isLoggedIn;
+        const oldUserName = this.userName;
+        
         this.currentUser = user;
         this.isLoggedIn = !!user;
         this.userName = user?.username || '';
+        
+        // Só loga se realmente houve mudança
+        if (wasLoggedIn !== this.isLoggedIn || oldUserName !== this.userName) {
+          console.log('Header: Estado de autenticação atualizado', { 
+            isLoggedIn: this.isLoggedIn, 
+            userName: this.userName, 
+            isAdmin: this.isAdmin() 
+          });
+        }
+        
         this.cdr.detectChanges();
-        console.log('Header: Estado de autenticação atualizado', { isLoggedIn: this.isLoggedIn, userName: this.userName, isAdmin: this.isAdmin() });
       },
       error: (error: any) => {
         console.error('Erro ao subscrever mudanças de autenticação:', error);
@@ -221,7 +233,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goToGenre(genreId: number) {
     this.router.navigate(['/books'], { 
-      queryParams: { gender_id: genreId } 
+      queryParams: { genderID: genreId } 
     });
   }
 }

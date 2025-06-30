@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BookService } from '../../../../core/services/book-mock.service';
-import { GenderService } from '../../../../core/services/gender-mock.service';
+import { BookService } from '../../../../core/services/book.service';
+import { GenderService } from '../../../../core/services/gender.service';
 import { CartService } from '../../../../core/services/cart.service';
-import { Book, Gender } from '../../../../core/models';
+import { Book, Gender } from '../../../../core/models/api-models';
 
 @Component({
   selector: 'app-catalog',
@@ -42,8 +42,8 @@ export class CatalogComponent implements OnInit {
 
   handleRouteParams() {
     this.route.queryParams.subscribe(params => {
-      if (params['gender_id']) {
-        this.selectedGenderId = +params['gender_id'];
+      if (params['genderID']) {
+        this.selectedGenderId = +params['genderID'];
       }
       if (params['search']) {
         this.searchTerm = params['search'];
@@ -68,8 +68,8 @@ export class CatalogComponent implements OnInit {
     
     const filters = {
       search: this.searchTerm || undefined,
-      gender_id: this.selectedGenderId || undefined,
-      status_stock: this.selectedStock === 'ALL' ? undefined : this.selectedStock
+      genderID: this.selectedGenderId || undefined,
+      statusStock: this.selectedStock === 'ALL' ? undefined : this.selectedStock
     };
 
     this.bookService.getBooks(filters).subscribe({
@@ -124,7 +124,7 @@ export class CatalogComponent implements OnInit {
     }
     
     if (this.selectedGenderId) {
-      queryParams.gender_id = this.selectedGenderId;
+      queryParams.genderID = this.selectedGenderId;
     }
 
     this.router.navigate([], {
@@ -135,7 +135,7 @@ export class CatalogComponent implements OnInit {
   }
 
   addToCart(book: Book) {
-    if (book.status_stock === 'OUT_OF_STOCK') {
+    if (book.statusStock === 'OUT_OF_STOCK') {
       return;
     }
     
@@ -164,6 +164,6 @@ export class CatalogComponent implements OnInit {
   }
 
   isInStock(book: Book): boolean {
-    return book.status_stock === 'IN_STOCK';
+    return book.statusStock === 'IN_STOCK';
   }
 }

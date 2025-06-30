@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../../../core/services/cart.service';
 import { StorageService } from '../../../../core/services/storage.service';
-import { Cart, CartItem } from '../../../../core/models';
+import { Cart, CartItem } from '../../../../core/models/api-models';
 
 @Component({
   selector: 'app-cart',
@@ -15,7 +15,12 @@ import { Cart, CartItem } from '../../../../core/models';
   styleUrl: './cart.component.css'
 })
 export class CartComponent implements OnInit, OnDestroy {
-  cart: Cart = { items: [], totalItems: 0, totalPrice: 0 };
+  cart: Cart = { 
+    items: [], 
+    totalItems: 0, 
+    totalPrice: 0,
+    updatedAt: new Date()
+  };
   isLoading = false;
   isUpdating = false;
   isLoggedIn = false;
@@ -45,21 +50,22 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   loadCart() {
-    this.isLoading = true;
+    // Remove o setTimeout desnecessário que pode estar causando problemas
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
     
-    // Simular um pequeno delay para mostrar loading (opcional)
-    setTimeout(() => {
-      this.cartSubscription = this.cartService.cart$.subscribe({
-        next: (cart) => {
-          this.cart = cart;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Erro ao carregar carrinho:', error);
-          this.isLoading = false;
-        }
-      });
-    }, 300);
+    this.isLoading = true;
+    this.cartSubscription = this.cartService.cart$.subscribe({
+      next: (cart) => {
+        this.cart = cart;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar carrinho:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   updateQuantity(item: CartItem, newQuantity: number) {
@@ -69,7 +75,7 @@ export class CartComponent implements OnInit, OnDestroy {
     }
 
     this.isUpdating = true;
-    this.cartService.updateItemQuantity(item.book.id, newQuantity);
+    this.cartService.updateQuantity(item.book.id, newQuantity);
     
     // Simular delay de update
     setTimeout(() => {

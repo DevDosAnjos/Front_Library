@@ -87,6 +87,19 @@
           Entrando...
         </span>
       </button>
+
+      <!-- Botões de teste temporários -->
+      <div style="margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; background: #f5f5f5;">
+        <h4>🔧 Debug - Testes de API</h4>
+        <button type="button" (click)="testDifferentEndpoints()" 
+                style="margin: 0.5rem; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 4px;">
+          Testar Endpoints
+        </button>
+        <button type="button" (click)="testAdminLogin()" 
+                style="margin: 0.5rem; padding: 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px;">
+          Login Admin Direto
+        </button>
+      </div>
     </form>
     
     <!-- Footer -->

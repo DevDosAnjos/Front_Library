@@ -4,3 +4,4 @@ export { AuthService } from './auth.service';
 export { BookService } from './book.service';
 export { GenderService } from './gender.service';
 export { CartService } from './cart.service';
+export { ConfigService } from './config.service';

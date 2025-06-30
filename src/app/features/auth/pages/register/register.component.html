@@ -12,6 +12,33 @@
 
     <!-- Register Form -->
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Mensagem de erro da API -->
+      <div class="alert alert-error" *ngIf="errorMessage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+          <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        {{ errorMessage }}
+      </div>
+      
+      <!-- Mensagem de sucesso -->
+      <div class="alert alert-success" *ngIf="successMessage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        {{ successMessage }}
+      </div>
+      
+      <!-- Mensagem de registro (se houver) -->
+      <div class="alert alert-success" *ngIf="registerMessage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        {{ registerMessage }}
+      </div>
       <div class="form-group">
         <label for="username" class="form-label">Nome de usuário</label>
         <input

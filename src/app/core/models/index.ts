@@ -1,3 +1,6 @@
+// Novos modelos API - Re-exportação
+export * from './api-models';
+
 // User Models - Baseado na estrutura real do backend
 export interface User {
   id: number;

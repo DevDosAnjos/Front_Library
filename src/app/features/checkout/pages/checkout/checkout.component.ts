@@ -5,7 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../../../core/services/cart.service';
 import { StorageService } from '../../../../core/services/storage.service';
-import { Cart, CartItem } from '../../../../core/models';
+import { Cart, CartItem } from '../../../../core/models/api-models';
 
 @Component({
   selector: 'app-checkout',
@@ -15,7 +15,12 @@ import { Cart, CartItem } from '../../../../core/models';
   styleUrl: './checkout.component.css'
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
-  cart: Cart = { items: [], totalItems: 0, totalPrice: 0 };
+  cart: Cart = { 
+    items: [], 
+    totalItems: 0, 
+    totalPrice: 0,
+    updatedAt: new Date()
+  };
   checkoutForm: FormGroup;
   isLoading = false;
   isProcessing = false;

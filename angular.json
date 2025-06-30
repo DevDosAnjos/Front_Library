@@ -55,7 +55,14 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "outputMode": "static"
+            },
+            "spa": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
@@ -68,6 +75,9 @@
             },
             "development": {
               "buildTarget": "frontend:build:development"
+            },
+            "spa": {
+              "buildTarget": "frontend:build:spa"
             }
           },
           "defaultConfiguration": "development"

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
 import { User, LoginRequest, LoginResponse, RegisterRequest, ApiResponse } from '../models';
@@ -10,17 +10,28 @@ import { User, LoginRequest, LoginResponse, RegisterRequest, ApiResponse } from 
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  public currentUser$ = this.currentUserSubject.asObservable().pipe(
+    distinctUntilChanged((prev, curr) => prev?.username === curr?.username),
+    shareReplay(1)
+  );
 
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  public isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  public isLoggedIn$ = this.isLoggedInSubject.asObservable().pipe(
+    distinctUntilChanged(),
+    shareReplay(1)
+  );
+
+  private initialized = false;
 
   constructor(
     private apiService: ApiService,
     private storageService: StorageService
   ) {
-    console.log('AuthService: Construtor chamado');
-    this.checkInitialAuthState();
+    if (!this.initialized) {
+      console.log('AuthService: Construtor chamado');
+      this.initialized = true;
+      this.checkInitialAuthState();
+    }
   }
 
   /**
@@ -45,57 +56,93 @@ export class AuthService {
   }
 
   /**
-   * Login simulado para desenvolvimento (sem backend)
+   * Realiza login do usuário
    */
-  loginMock(username: string, password: string): Observable<User> {
-    console.log('AuthService.loginMock: Método chamado com', username, password);
-    return new Observable(observer => {
-      setTimeout(() => {
-        console.log('AuthService.loginMock: Processando login...');
-        // Simular dados do usuário baseado nas credenciais
-        const role = (username === 'admin' && password === 'admin123') ? 'ADMIN' : 'USER';
-        const token = 'fake-jwt-token-' + Date.now();
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('AuthService.login: Tentando login com backend para:', credentials.username);
+    
+    return this.apiService.post<any>('auth/login', credentials).pipe(
+      map(response => {
+        console.log('AuthService.login: Response completa do backend:', response);
+        console.log('AuthService.login: Tipo da response:', typeof response);
+        console.log('AuthService.login: Keys da response:', Object.keys(response || {}));
         
-        const user: User = {
-          id: role === 'ADMIN' ? 1 : 2,
-          username: username,
-          role,
-        };
-
-        console.log('AuthService.loginMock: Usuário criado', user);
-
+        let token: string;
+        let user: User;
+        
+        // Verificar diferentes estruturas de resposta do backend
+        if (response && response.token && typeof response.token === 'string') {
+          // Caso mais simples: backend retorna apenas { token: "..." }
+          console.log('AuthService.login: Backend retornou apenas token');
+          token = response.token;
+          
+          // Criar um usuário baseado nas credenciais fornecidas
+          user = {
+            id: credentials.username.toLowerCase() === 'admin' ? 1 : 2,
+            username: credentials.username,
+            role: credentials.username.toLowerCase() === 'admin' ? 'ADMIN' : 'USER'
+          };
+          console.log('AuthService.login: Usuario criado com base no username:', user);
+          
+        } else if (response && response.access_token && typeof response.access_token === 'string') {
+          // Caso o backend use access_token ao invés de token
+          console.log('AuthService.login: Backend retornou access_token');
+          token = response.access_token;
+          
+          user = {
+            id: credentials.username.toLowerCase() === 'admin' ? 1 : 2,
+            username: credentials.username,
+            role: credentials.username.toLowerCase() === 'admin' ? 'ADMIN' : 'USER'
+          };
+          
+        } else if (response && response.success && response.data && response.data.token) {
+          // Estrutura: { success: true, data: { token, user? } }
+          console.log('AuthService.login: Usando estrutura ApiResponse');
+          token = response.data.token;
+          
+          if (response.data.user) {
+            user = response.data.user;
+          } else {
+            user = {
+              id: credentials.username.toLowerCase() === 'admin' ? 1 : 2,
+              username: credentials.username,
+              role: credentials.username.toLowerCase() === 'admin' ? 'ADMIN' : 'USER'
+            };
+          }
+          
+        } else if (response && response.token && response.user) {
+          // Estrutura completa: { token, user }
+          console.log('AuthService.login: Estrutura completa com token e user');
+          token = response.token;
+          user = response.user;
+          
+        } else {
+          console.error('AuthService.login: Estrutura de response não reconhecida:', response);
+          throw new Error('Backend não retornou token válido');
+        }
+        
+        console.log('AuthService.login: Token extraído:', token);
+        console.log('AuthService.login: Usuario final:', user);
+        
         // Salva token e dados do usuário
         this.storageService.setItem('authToken', token);
-        this.storageService.setItem('userName', username);
-        this.storageService.setItem('userRole', role);
+        this.storageService.setItem('userName', user.username);
+        this.storageService.setItem('userRole', user.role);
         this.storageService.setObject('currentUser', user);
         
         // Atualiza subjects
         this.currentUserSubject.next(user);
         this.isLoggedInSubject.next(true);
-
-        console.log('AuthService.loginMock: Login concluído');
-        observer.next(user);
-        observer.complete();
-      }, 2000);
-    });
-  }
-
-  /**
-   * Realiza login do usuário
-   */
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.apiService.post<ApiResponse<LoginResponse>>('auth/login', credentials).pipe(
-      map(response => {
-        const loginData = response.data;
         
-        // Salva token e dados do usuário
-        this.storageService.setItem('authToken', loginData.token);
-        this.storageService.setObject('currentUser', loginData.user);
+        console.log('AuthService.login: Login realizado com sucesso');
+        console.log('AuthService.login: Token salvo no storage');
+        console.log('AuthService.login: Usuario atual:', user);
         
-        // Atualiza subjects
-        this.currentUserSubject.next(loginData.user);
-        this.isLoggedInSubject.next(true);
+        // Retorna no formato esperado pelo frontend
+        const loginData: LoginResponse = {
+          token: token,
+          user: user
+        };
         
         return loginData;
       })
@@ -118,22 +165,38 @@ export class AuthService {
   }
 
   /**
-   * Registra novo usuário
+   * Registra novo usuário - SEMPRE redireciona para login
    */
-  register(userData: RegisterRequest): Observable<LoginResponse> {
-    return this.apiService.post<ApiResponse<LoginResponse>>('auth/register', userData).pipe(
+  register(userData: RegisterRequest): Observable<{success: boolean, message: string, username: string, requiresLogin: boolean}> {
+    console.log('AuthService.register: Tentando registrar usuário:', userData.username);
+    console.log('AuthService.register: Dados enviados:', userData);
+    
+    return this.apiService.post<any>('auth/register', userData).pipe(
       map(response => {
-        const loginData = response.data;
+        console.log('AuthService.register: Response completa do backend:', response);
+        console.log('AuthService.register: Tipo da response:', typeof response);
+        console.log('AuthService.register: Keys da response:', Object.keys(response || {}));
         
-        // Salva token e dados do usuário após registro
-        this.storageService.setItem('authToken', loginData.token);
-        this.storageService.setObject('currentUser', loginData.user);
-        
-        // Atualiza subjects
-        this.currentUserSubject.next(loginData.user);
-        this.isLoggedInSubject.next(true);
-        
-        return loginData;
+        // Para sua API que sempre retorna apenas o username do usuário criado
+        if (response && response.username && typeof response.username === 'string') {
+          console.log('AuthService.register: Backend retornou username do usuário criado:', response.username);
+          console.log('AuthService.register: Registro bem-sucedido - sempre redireciona para login');
+          
+          // Retorna objeto indicando sucesso sem token (sempre redireciona para login)
+          const registrationResult = {
+            success: true,
+            message: 'Usuário registrado com sucesso! Redirecionando para login...',
+            username: response.username,
+            requiresLogin: true
+          };
+          
+          console.log('AuthService.register: Retornando resultado de registro:', registrationResult);
+          return registrationResult;
+          
+        } else {
+          console.error('AuthService.register: Estrutura de response não reconhecida:', response);
+          throw new Error('Backend não retornou resposta válida para registro');
+        }
       })
     );
   }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { StorageService } from '../../../../core/services/storage.service';
-import { SimpleAuthService } from '../../../../core/services/simple-auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -28,7 +28,7 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private storageService: StorageService,
-    private authService: SimpleAuthService
+    private authService: AuthService
   ) {
     // Dashboard admin inicializado
   }

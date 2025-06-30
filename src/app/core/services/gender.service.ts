@@ -2,95 +2,101 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { Gender, GenderFilters, ApiResponse } from '../models';
+import {
+  Gender,
+  GenderFilters,
+  GenderCreateRequest,
+  GenderUpdateRequest,
+  GenderResponse
+} from '../models/api-models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GenderService {
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService
+  ) {}
 
   /**
-   * Busca todos os gêneros
+   * Busca gêneros públicos
+   * Alinhado com backend: GET /api/gender (permitAll)
    */
   getGenders(filters?: GenderFilters): Observable<Gender[]> {
-    const params = this.buildFilterParams(filters);
-    return this.apiService.get<ApiResponse<Gender[]>>('genders', params).pipe(
-      map(response => response.data)
+    return this.apiService.get<GenderResponse[]>('gender').pipe(
+      map(genders => genders.map(gender => this.mapGenderResponseToGender(gender)))
     );
   }
 
   /**
-   * Busca apenas gêneros ativos
+   * Busca todos os gêneros (usuários autenticados)
+   * Alinhado com backend: GET /api/gender/all (authenticated)
    */
-  getActiveGenders(): Observable<Gender[]> {
-    return this.getGenders({ status_gender: 'ACTIVE' });
+  getAllGenders(): Observable<Gender[]> {
+    return this.apiService.get<GenderResponse[]>('gender/all').pipe(
+      map(genders => genders.map(gender => this.mapGenderResponseToGender(gender)))
+    );
   }
 
   /**
-   * Busca um gênero específico por ID
+   * Busca gêneros ativos (usuários autenticados)
+   * Alinhado com backend: GET /api/gender/active (authenticated)
    */
-  getGenderById(id: number): Observable<Gender> {
-    return this.apiService.get<ApiResponse<Gender>>(`genders/${id}`).pipe(
-      map(response => response.data)
+  getActiveGenders(): Observable<Gender[]> {
+    return this.apiService.get<GenderResponse[]>('gender/active').pipe(
+      map(genders => genders.map(gender => this.mapGenderResponseToGender(gender)))
+    );
+  }
+
+  /**
+   * Busca gêneros inativos (apenas admin)
+   * Alinhado com backend: GET /api/gender/inactive (hasRole ADMIN)
+   */
+  getInactiveGenders(): Observable<Gender[]> {
+    return this.apiService.get<GenderResponse[]>('gender/inactive').pipe(
+      map(genders => genders.map(gender => this.mapGenderResponseToGender(gender)))
     );
   }
 
   /**
    * Cria um novo gênero (ADMIN apenas)
+   * Alinhado com backend: POST /api/gender (hasRole ADMIN)
    */
-  createGender(gender: Omit<Gender, 'id'>): Observable<Gender> {
-    return this.apiService.post<ApiResponse<Gender>>('genders', gender).pipe(
-      map(response => response.data)
+  createGender(genderData: GenderCreateRequest): Observable<Gender> {
+    return this.apiService.post<GenderResponse>('gender', genderData).pipe(
+      map(gender => this.mapGenderResponseToGender(gender))
     );
   }
 
   /**
    * Atualiza um gênero (ADMIN apenas)
+   * Alinhado com backend: PUT /api/gender/{id} (hasRole ADMIN)
    */
-  updateGender(id: number, gender: Partial<Omit<Gender, 'id'>>): Observable<Gender> {
-    return this.apiService.put<ApiResponse<Gender>>(`genders/${id}`, gender).pipe(
-      map(response => response.data)
-    );
-  }
-
-  /**
-   * Ativa/desativa um gênero (ADMIN apenas)
-   */
-  toggleGenderStatus(id: number): Observable<Gender> {
-    return this.apiService.patch<ApiResponse<Gender>>(`genders/${id}/toggle-status`, {}).pipe(
-      map(response => response.data)
+  updateGender(id: number, genderData: GenderUpdateRequest): Observable<Gender> {
+    return this.apiService.put<GenderResponse>(`gender/${id}`, genderData).pipe(
+      map(gender => this.mapGenderResponseToGender(gender))
     );
   }
 
   /**
    * Deleta um gênero (ADMIN apenas)
+   * Alinhado com backend: DELETE /api/gender/{id} (hasRole ADMIN)
    */
-  deleteGender(id: number): Observable<void> {
-    return this.apiService.delete<void>(`genders/${id}`);
-  }
-
-  /**
-   * Busca estatísticas de livros por gênero
-   */
-  getGenderStats(): Observable<{gender: Gender, bookCount: number, inStockCount: number}[]> {
-    return this.apiService.get<ApiResponse<any[]>>('genders/stats').pipe(
-      map(response => response.data)
+  deleteGender(id: number): Observable<boolean> {
+    return this.apiService.delete(`gender/${id}`).pipe(
+      map(() => true)
     );
   }
 
   /**
-   * Constrói parâmetros de filtro para a API
+   * Mapeia GenderResponse do backend para Gender do frontend
    */
-  private buildFilterParams(filters?: GenderFilters): any {
-    if (!filters) return {};
-
-    const params: any = {};
-
-    if (filters.status_gender) params.status_gender = filters.status_gender;
-    if (filters.search) params.search = filters.search;
-
-    return params;
+  private mapGenderResponseToGender(genderResponse: GenderResponse): Gender {
+    return {
+      id: parseInt(genderResponse.id),
+      name: genderResponse.name,
+      statusGender: genderResponse.statusGender
+    };
   }
 }
