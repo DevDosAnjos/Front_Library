@@ -1,0 +1,173 @@
+<div class="catalog-container">
+  <!-- Header Section -->
+  <div class="catalog-header">
+    <div class="catalog-header-content">
+      <h1 class="catalog-title">Catálogo de Livros</h1>
+      <p class="catalog-subtitle">Descubra nossa coleção completa</p>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-container">
+      <!-- Search Bar -->
+      <div class="filter-group search-group">
+        <label for="search" class="filter-label">Buscar livros</label>
+        <div class="search-wrapper">
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="onSearch()"
+            class="search-input"
+            placeholder="Digite o nome do livro..."
+          />
+          <button type="button" class="search-btn" (click)="onSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Gender Filter -->
+      <div class="filter-group">
+        <label for="gender" class="filter-label">Gênero</label>
+        <select
+          id="gender"
+          [(ngModel)]="selectedGenderId"
+          (change)="onGenderChange()"
+          class="filter-select"
+        >
+          <option [value]="null">Todos os gêneros</option>
+          <option *ngFor="let gender of genders" [value]="gender.id">
+            {{ gender.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Stock Filter -->
+      <div class="filter-group">
+        <label for="stock" class="filter-label">Estoque</label>
+        <select
+          id="stock"
+          [(ngModel)]="selectedStock"
+          (change)="onStockChange()"
+          class="filter-select"
+        >
+          <option value="ALL">Todos</option>
+          <option value="IN_STOCK">Em estoque</option>
+          <option value="OUT_OF_STOCK">Esgotado</option>
+        </select>
+      </div>
+
+      <!-- Sort Filter -->
+      <div class="filter-group">
+        <label for="sort" class="filter-label">Ordenar por</label>
+        <select
+          id="sort"
+          [(ngModel)]="sortBy"
+          (change)="onSortChange()"
+          class="filter-select"
+        >
+          <option value="name">Nome</option>
+          <option value="price">Preço</option>
+        </select>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="filter-group">
+        <label for="order" class="filter-label">Ordem</label>
+        <select
+          id="order"
+          [(ngModel)]="sortOrder"
+          (change)="onSortChange()"
+          class="filter-select"
+        >
+          <option value="asc">Crescente</option>
+          <option value="desc">Decrescente</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="filter-group">
+        <button type="button" class="clear-filters-btn" (click)="clearFilters()">
+          Limpar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando livros...</p>
+  </div>
+
+  <!-- Books Grid -->
+  <div *ngIf="!isLoading" class="books-section">
+    <!-- Results Info -->
+    <div class="results-info">
+      <p class="results-count">
+        {{ books.length }} livro{{ books.length !== 1 ? 's' : '' }} encontrado{{ books.length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Books Grid -->
+    <div class="books-grid" *ngIf="books.length > 0">
+      <div *ngFor="let book of books" class="book-card">
+        <!-- Stock Status Badge -->
+        <div class="stock-badge" [class.out-of-stock]="!isInStock(book)">
+          {{ isInStock(book) ? 'Em estoque' : 'Esgotado' }}
+        </div>
+
+        <!-- Book Content -->
+        <div class="book-content">
+          <h3 class="book-title">{{ book.name }}</h3>
+          <p class="book-genre">{{ getGenderName(book.gender_id) }}</p>
+          <div class="book-price">{{ formatPrice(book.price) }}</div>
+        </div>
+
+        <!-- Book Actions -->
+        <div class="book-actions">
+          <button
+            type="button"
+            class="btn-view"
+            [routerLink]="['/books', book.id]"
+          >
+            Ver Detalhes
+          </button>
+          <button
+            type="button"
+            class="btn-cart"
+            [disabled]="!isInStock(book)"
+            (click)="addToCart(book)"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" *ngIf="isInStock(book)">
+              <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.3 5.1 16.3H17M17 13V16A2 2 0 0 1 15 18H9A2 2 0 0 1 7 16V13" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            {{ isInStock(book) ? 'Adicionar' : 'Indisponível' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="books.length === 0" class="no-results">
+      <div class="no-results-content">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" class="no-results-icon">
+          <path d="M21 16V8A2 2 0 0 0 19 6H5A2 2 0 0 0 3 8V16A2 2 0 0 0 5 18H19A2 2 0 0 0 21 16Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 10L12 13L17 10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h3 class="no-results-title">Nenhum livro encontrado</h3>
+        <p class="no-results-text">
+          Tente ajustar os filtros ou limpar a busca para ver mais resultados.
+        </p>
+        <button type="button" class="btn-primary" (click)="clearFilters()">
+          Limpar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

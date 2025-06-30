@@ -149,6 +149,10 @@
           <a (click)="goToProfile(); toggleMenu()" class="mobile-menu-item">
             Meu Perfil
           </a>
+          <a (click)="goToCart(); toggleMenu()" class="mobile-menu-item">
+            Meu Carrinho
+            <span class="mobile-cart-count" *ngIf="cartItemsCount > 0">({{ cartItemsCount }})</span>
+          </a>
           <a routerLink="/orders" (click)="toggleMenu()" class="mobile-menu-item">
             Meus Pedidos
           </a>

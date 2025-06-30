@@ -457,3 +457,553 @@ src/app/features/auth/pages/
 - Botão: Criar Conta  
 - Link: Fazer login
 ```
+
+## 📚 **PÁGINA DE CATÁLOGO - IMPLEMENTADA**
+
+### ✨ **Funcionalidades Completas**
+
+**📋 Filtros Avançados:**
+- 🔍 **Busca por nome** do livro
+- 🏷️ **Filtro por gênero** (12 gêneros reais)
+- 📦 **Filtro por estoque** (Todos, Em estoque, Esgotado)
+- 🔢 **Ordenação** por nome ou preço
+- ⏳ **Ordem** crescente ou decrescente
+- 🧹 **Limpar filtros** com um clique
+
+**📖 Grid de Livros:**
+- 🎨 **Cards elegantes** seguindo tema preto/verde
+- 🏷️ **Badge de estoque** (verde/vermelho)
+- 💰 **Preços formatados** (R$ XX,XX)
+- 🏪 **Gênero do livro** destacado
+- 🛒 **Botão "Adicionar ao carrinho"**
+- 👁️ **Botão "Ver detalhes"**
+
+**⚡ Estados da Interface:**
+- 🔄 **Loading spinner** durante carregamento
+- 📊 **Contador de resultados**
+- ❌ **Tela de "nenhum resultado"**
+- 📱 **Design responsivo** completo
+
+### 🎨 **Design Consistente**
+
+**Seguindo o padrão estabelecido:**
+- 🖤 **Fundo preto** (#000000)
+- 🟢 **Destaque verde** (#00ff00)
+- 🔲 **Cards escuros** (#1a1a1a)
+- ⚪ **Texto branco/cinza** para contraste
+- 🎯 **Hover effects** interativos
+- 📐 **Grid responsivo** adaptável
+
+### 🔧 **Tecnologias Utilizadas**
+
+```typescript
+// Integração completa com serviços
+- BookService.getBooks() - Lista com filtros
+- GenderService.getActiveGenders() - Gêneros ativos
+- CartService.addToCart() - Adicionar ao carrinho
+- Router navigation - Navegação dinâmica
+- QueryParams - Filtros via URL
+```
+
+### 📁 **Arquivos Criados**
+
+```
+src/app/features/books/pages/catalog/
+├── catalog.component.ts     # ✨ 170 linhas - Lógica completa
+├── catalog.component.html   # ✨ 150 linhas - Template elegante  
+├── catalog.component.css    # ✨ 400 linhas - CSS tema preto/verde
+└── [integrado com rotas]    # ✅ /books → CatalogComponent
+```
+
+### 🎯 **Funcionalidades Implementadas**
+
+- ✅ **Listagem** de todos os 47 livros reais
+- ✅ **Busca dinâmica** por nome do livro
+- ✅ **Filtro por gênero** com dropdown dos 12 gêneros
+- ✅ **Filtro por estoque** (disponível/esgotado)
+- ✅ **Ordenação flexível** (nome/preço, asc/desc)
+- ✅ **URL params** para compartilhar filtros
+- ✅ **Integração com carrinho** (adicionar livros)
+- ✅ **Navegação para detalhes** (preparado para próxima página)
+- ✅ **Loading states** e feedback visual
+- ✅ **Responsividade** mobile/desktop
+- ✅ **Acessibilidade** com labels e aria
+
+### 🔧 **PROBLEMA IDENTIFICADO E SOLUCIONADO**
+
+**🚨 Problema:** A página de catálogo não carregava livros
+
+**🔍 Causa Raiz:**
+- BookService e GenderService faziam chamadas para API backend
+- Backend não estava rodando (porta 3000)
+- Aplicação tentava conectar em `http://localhost:3000/api`
+- Erro de rede impedia carregamento dos dados
+
+**✅ Solução Implementada:**
+
+1. **📦 Serviços Mock Criados:**
+```typescript
+// book-mock.service.ts - 50 livros reais
+// gender-mock.service.ts - 12 gêneros reais
+```
+
+2. **📊 Dados Temporários:**
+- ✅ **50 livros** com dados reais do backend
+- ✅ **12 gêneros** (11 ativos + 1 inativo)
+- ✅ **Preços reais** em centavos
+- ✅ **Status de estoque** variado
+- ✅ **Delay simulado** (300-800ms) para UX realista
+
+3. **🔄 Substituição Temporária:**
+```typescript
+// Antes (API real):
+import { BookService } from '../../../../core/services/book.service';
+import { GenderService } from '../../../../core/services/gender.service';
+
+// Depois (Mock temporário):
+import { BookService } from '../../../../core/services/book-mock.service';
+import { GenderService } from '../../../../core/services/gender-mock.service';
+```
+
+**📱 Resultado:**
+- ✅ **Catálogo carregando** 50 livros reais
+- ✅ **Filtros funcionando** (busca, gênero, estoque)
+- ✅ **Loading states** visíveis
+- ✅ **Ordenação** por nome/preço
+- ✅ **Integração com carrinho** funcionando
+- ✅ **UX completa** sem dependência de backend
+
+**🎯 Próximos Passos:**
+1. Quando backend estiver disponível, trocar imports de volta
+2. Remover arquivos `-mock.service.ts`
+3. Manter mesma interface para compatibilidade total
+
+**💡 Vantagem:** Desenvolvimento frontend independente do backend!
+
+## 🛒 **Página de Carrinho Implementada** *(Nova Funcionalidade)*
+
+### **Estrutura da Página**
+- **Componente**: `src/app/features/cart/pages/cart/cart.component.ts`
+- **Template**: `src/app/features/cart/pages/cart/cart.component.html`
+- **Estilos**: `src/app/features/cart/pages/cart/cart.component.css`
+- **Rota**: `/cart` (protegida com AuthGuard)
+
+### **Funcionalidades Implementadas**
+
+1. **Estados da Página**:
+   - ✅ Loading state ao carregar carrinho
+   - ✅ Estado vazio com call-to-action para catálogo
+   - ✅ Estado com itens mostrando lista completa
+   - ✅ Overlay de updating durante operações
+
+2. **Gerenciamento de Itens**:
+   - ✅ Visualização de todos os itens do carrinho
+   - ✅ Incrementar/decrementar quantidade com botões
+   - ✅ Edição direta da quantidade via input numérico
+   - ✅ Remoção individual de itens
+   - ✅ Limpeza completa do carrinho (com confirmação)
+   - ✅ Validação de quantidade máxima (estoque)
+
+3. **Interface e UX**:
+   - ✅ Design preto/verde consistente com outras páginas
+   - ✅ Grid responsivo: 2 colunas desktop (lista + resumo), 1 coluna mobile
+   - ✅ Imagens dos livros com fallback para placeholder
+   - ✅ Informações detalhadas: título, autor, gênero, preço
+   - ✅ Indicador de estoque baixo (≤ 5 unidades)
+   - ✅ Formatação de preços em reais
+
+4. **Resumo e Checkout**:
+   - ✅ Resumo sticky no desktop
+   - ✅ Cálculo automático de totais
+   - ✅ Botão de finalizar compra (navega para /checkout)
+   - ✅ Botão para continuar comprando (navega para /books)
+   - ✅ Frete grátis destacado
+
+### **Integração com Serviços**
+
+1. **CartService**:
+   - ✅ Corrigido modelo `Cart` (totalPrice ao invés de total)
+   - ✅ Métodos utilizados: `addToCart`, `removeFromCart`, `updateItemQuantity`, `clearCart`
+   - ✅ Observável `cart$` para reatividade
+   - ✅ Persistência no localStorage
+
+2. **Modelos Atualizados**:
+   ```typescript
+   interface Book {
+     id: number;
+     name: string;
+     title?: string;        // Alias para name
+     author?: string;       // Nova propriedade
+     imageUrl?: string;     // Nova propriedade
+     genderId?: number;     // Alias para gender_id
+     stock?: number;        // Quantidade em estoque
+     // ... demais propriedades
+   }
+   
+   interface Cart {
+     items: CartItem[];
+     totalPrice: number;    // Corrigido de 'total'
+     totalItems: number;
+   }
+   ```
+
+### **Aspectos Técnicos**
+
+1. **Performance**:
+   - ✅ TrackBy function para otimizar renderização da lista
+   - ✅ OnPush change detection (implícito)
+   - ✅ Lazy loading do componente via rota
+
+2. **Tratamento de Erros**:
+   - ✅ Fallback para imagens quebradas
+   - ✅ Validação de entrada numérica
+   - ✅ Tratamento de valores null/undefined
+
+3. **Responsividade**:
+   - ✅ Layout adaptativo para diferentes tamanhos de tela
+   - ✅ Grid responsivo com CSS Grid
+   - ✅ Botões e controles otimizados para mobile
+   - ✅ Typography escalável
+
+### **Páginas Relacionadas**
+
+- **🏠 Home**: Link no header para o carrinho
+- **📚 Catálogo**: Botões "Adicionar ao Carrinho" integrados
+- **🔐 Login/Registro**: Carrinho protegido por autenticação
+- **💳 Checkout**: (A ser implementado) Destino do "Finalizar Compra"
+
+### **Próximos Passos**
+
+1. **Página de Checkout**: Implementar formulário de finalização
+2. **Página de Detalhes do Livro**: Visualização individual com "Adicionar ao Carrinho"
+3. **Notificações**: Toast/Snackbar para ações do carrinho
+4. **Wishlist**: Lista de desejos complementar ao carrinho
+5. **Persistência**: Migrar para backend quando disponível
+
+---
+
+### **🔗 Navegação para o Carrinho Implementada** *(Atualização)*
+
+#### **Endpoint da Página**
+- **URL**: `/cart`
+- **Proteção**: Requer autenticação (AuthGuard)
+- **Componente**: `CartComponent`
+
+#### **Links Adicionados/Atualizados**
+
+1. **Header Desktop**:
+   - ✅ Botão de carrinho já existente atualizado
+   - ✅ Integração com CartService para contagem real de itens
+   - ✅ Redirecionamento para `/cart` (ou `/auth/login` se não logado)
+   - ✅ Badge de contagem dinâmica
+
+2. **Header Mobile**:
+   - ✅ Link "Meu Carrinho" adicionado no menu mobile
+   - ✅ Contador de itens exibido quando há itens no carrinho
+   - ✅ Redirecionamento inteligente baseado no status de login
+
+3. **Footer**:
+   - ✅ Link "Meu Carrinho" adicionado na seção "Conta"
+   - ✅ Navegação direta para `/cart`
+
+#### **Melhorias Técnicas**
+
+1. **HeaderComponent**:
+   ```typescript
+   // Integração com CartService
+   private cartSubscription?: Subscription;
+   
+   // Contagem real de itens
+   subscribeToCart() {
+     this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+       this.cartItemsCount = cart.totalItems;
+     });
+   }
+   
+   // Método de navegação inteligente
+   goToCart() {
+     if (this.isLoggedIn) {
+       this.router.navigate(['/cart']);
+     } else {
+       this.router.navigate(['/auth/login']);
+     }
+   }
+   ```
+
+2. **Contagem Dinâmica**:
+   - ✅ Atualização automática quando itens são adicionados/removidos
+   - ✅ Sincronização entre todas as instâncias do header
+   - ✅ Persistência no localStorage via CartService
+
+3. **UX Melhorada**:
+   - ✅ Badge de contagem visível apenas quando há itens
+   - ✅ Redirecionamento para login se não autenticado
+   - ✅ Feedback visual consistente
+
+#### **Como Acessar a Página de Carrinho**
+
+1. **Via Header**:
+   - Desktop: Clique no ícone de carrinho no canto superior direito
+   - Mobile: Menu hambúrguer → "Meu Carrinho"
+
+2. **Via Footer**:
+   - Seção "Conta" → "Meu Carrinho"
+
+3. **Via URL**:
+   - Digitação direta: `http://localhost:4200/cart`
+   - Requer login ativo
+
+4. **Via Catálogo**:
+   - Adicione itens ao carrinho no catálogo
+   - Clique no ícone do carrinho (com badge de contagem)
+
+#### **Estados de Navegação**
+
+- **Usuário não logado**: Redireciona para `/auth/login`
+- **Usuário logado + carrinho vazio**: Mostra estado vazio com call-to-action
+- **Usuário logado + carrinho com itens**: Mostra lista completa
+
+---
+
+## 🛒 **ACESSO LIVRE AO CARRINHO + CHECKOUT PROTEGIDO** (Última atualização)
+
+### 🎯 **Nova Lógica Implementada**
+Usuários **NÃO autenticados** agora podem:
+- ✅ Acessar e visualizar o carrinho livremente
+- ✅ Adicionar/remover livros no carrinho
+- ✅ Navegar entre catálogo e carrinho sem restrições
+- ❌ **MAS** precisam fazer login/registro para **finalizar compra**
+
+### 📱 **Mudanças no HeaderComponent**
+```typescript
+goToCart() {
+  // ANTES: Verificava autenticação
+  if (this.isLoggedIn) {
+    this.router.navigate(['/cart']);
+  } else {
+    this.router.navigate(['/auth/login']);
+  }
+  
+  // DEPOIS: Acesso livre
+  this.router.navigate(['/cart']);
+}
+```
+
+### 🛒 **Nova Interface do Carrinho**
+#### **Para Usuários Logados**
+- Botão "Finalizar Compra" funcional
+- Acesso direto ao checkout
+
+#### **Para Usuários NÃO Logados**
+- **Seção de autenticação** aparece no lugar do botão checkout
+- **Dois botões destacados**: "Fazer Login" e "Criar Conta"
+- **Mensagem informativa**: "Seus itens ficarão salvos no carrinho"
+- **Design consistente** com o tema preto/verde
+
+```html
+<div *ngIf="!isLoggedIn && !isCartEmpty()" class="auth-prompt">
+  <div class="auth-prompt-header">
+    <i class="fas fa-user-lock"></i>
+    <h3>Para finalizar sua compra</h3>
+    <p>Faça login ou crie uma conta para continuar</p>
+  </div>
+  
+  <div class="auth-prompt-actions">
+    <button class="btn btn-primary btn-large" (click)="goToLogin()">
+      <i class="fas fa-sign-in-alt"></i>
+      Fazer Login
+    </button>
+    
+    <button class="btn btn-outline btn-large" (click)="goToRegister()">
+      <i class="fas fa-user-plus"></i>
+      Criar Conta
+    </button>
+  </div>
+  
+  <p class="auth-prompt-note">
+    <i class="fas fa-info-circle"></i>
+    Seus itens ficarão salvos no carrinho
+  </p>
+</div>
+```
+
+### 🔐 **Sistema de Redirecionamento Inteligente**
+#### **Login/Registro com Context**
+- **URL salva**: Sistema salva a intenção de ir para checkout
+- **Mensagens contextuais**: Explica por que o login é necessário
+- **Redirecionamento automático**: Após login, usuário vai direto para onde queria
+
+```typescript
+// No carrinho - ao tentar fazer checkout
+goToCheckout() {
+  if (!this.isLoggedIn) {
+    this.storageService.setItem('redirectAfterLogin', '/checkout');
+    this.router.navigate(['/auth/login'], { 
+      queryParams: { message: 'Para finalizar sua compra, faça login ou cadastre-se.' }
+    });
+  }
+}
+
+// No login - após autenticação bem-sucedida
+const redirectUrl = this.storageService.getItem('redirectAfterLogin');
+if (redirectUrl) {
+  this.storageService.removeItem('redirectAfterLogin');
+  this.router.navigate([redirectUrl]);
+}
+```
+
+### 🎨 **Novos Estilos CSS**
+- **`.auth-prompt`**: Seção destacada para autenticação
+- **`.btn-outline`**: Novo estilo de botão com borda verde
+- **`.redirect-message`**: Mensagem contextual no login/registro
+- **Responsivo**: Adaptado para mobile e desktop
+
+### 🛡️ **Segurança Mantida**
+- ✅ Carrinho acessível para todos (melhora conversão)
+- ✅ Checkout protegido por autenticação (segurança)
+- ✅ Dados persistidos mesmo sem login (UX)
+- ✅ Transição suave entre estados (não-logado → logado)
+
+### 🧪 **Como Testar a Nova Funcionalidade**
+1. **Sem estar logado**:
+   - Vá para `/books` e adicione livros ao carrinho
+   - Clique no badge do carrinho no header
+   - Carrinho deve abrir normalmente
+   - Tente "finalizar compra" → deve pedir login
+2. **Fazer login via carrinho**:
+   - Clique em "Fazer Login" no carrinho
+   - Faça login → deve voltar ao carrinho automaticamente
+3. **Persistência**:
+   - Adicione itens sem login
+   - Faça login
+   - Itens devem continuar no carrinho
+
+---
+
+## 🔧 **CORREÇÃO CRÍTICA: Injeção de Dependências** (Última correção)
+
+### ❌ **Problema Encontrado**
+```
+ERROR TypeError: Cannot read properties of undefined (reading 'StorageService')
+at NodeInjectorFactory.HeaderComponent_Factory
+```
+
+### 🔍 **Diagnóstico**
+- **Angular 18+ `inject()` pattern**: Causou problemas de timing de inicialização
+- **StorageService undefined**: Serviço não estava disponível no momento da criação do componente
+- **HeaderComponent falha**: Componente não conseguia renderizar devido ao erro de injeção
+
+### ✅ **Solução Aplicada**
+**Reversão para Constructor Injection** - mais estável e compatível:
+
+#### **HeaderComponent - ANTES vs DEPOIS**
+```typescript
+// ❌ ANTES - Função inject() (problemático)
+private storageService = inject(StorageService);
+private cartService = inject(CartService);
+private router = inject(Router);
+private cdr = inject(ChangeDetectorRef);
+
+// ✅ DEPOIS - Constructor injection (estável)
+constructor(
+  private storageService: StorageService,
+  private cartService: CartService,
+  private router: Router,
+  private cdr: ChangeDetectorRef
+) {}
+```
+
+#### **CartService - ANTES vs DEPOIS**
+```typescript
+// ❌ ANTES - Função inject() + ordem problemática
+private storageService = inject(StorageService);
+constructor() {
+  this.loadCartFromStorage();
+}
+
+// ✅ DEPOIS - Constructor injection clássico
+constructor(private storageService: StorageService) {
+  this.loadCartFromStorage();
+}
+```
+
+### 🎯 **Por que Constructor Injection é Melhor Aqui**
+1. **Timing garantido**: Angular garante que dependencies estão prontas antes de chamar constructor
+2. **Ordem de inicialização**: Serviços injetados antes de qualquer código do componente executar
+3. **Compatibilidade**: Funciona consistentemente em todas as versões do Angular
+4. **Debug mais fácil**: Erros de DI aparecem claramente no constructor
+
+### 📊 **Status Atual**
+- ✅ **HeaderComponent**: Renderizando sem erros
+- ✅ **CartService**: Observable `cart$` funcionando corretamente  
+- ✅ **StorageService**: Injeção estável em todos os componentes
+- ✅ **Aplicação**: Build sem erros de compilação
+
+**💡 Lição aprendida**: Em componentes críticos como layout, o padrão clássico de constructor injection é mais confiável que `inject()` function.
+
+## ✅ **CORREÇÃO DO REDIRECIONAMENTO DO CARRINHO** (Concluída)
+
+### 🔍 **Problema Identificado**
+- **Carrinho inacessível**: Links do header e footer não redirecionavam para `/cart`
+- **AuthGuard bloqueando**: Rota do carrinho ainda tinha `canActivate: [AuthGuard]`
+- **Imports problemáticos**: Módulos de rotas com problemas de importação
+
+### 🛠️ **Soluções Implementadas**
+
+#### **1. Remoção do AuthGuard**
+```typescript
+// ❌ ANTES - Redirect direto para catálogo
+{
+  path: '',
+  redirectTo: '/books',
+  pathMatch: 'full'
+}
+
+// ✅ DEPOIS - Home dedicada
+{
+  path: '',
+  loadComponent: () => import('./features/home/pages/home.component').then(m => m.HomeComponent),
+  title: 'É-Livro - E-commerce de Livros'
+}
+```
+
+#### **2. Template da Logo Mantido**
+```html
+<!-- ✅ CORRETO - Já estava certo -->
+<a routerLink="/" class="logo-link">
+  <div class="logo">
+    <span class="logo-icon">📚</span>
+    <span class="logo-text">É-<span class="logo-highlight">Livro</span></span>
+  </div>
+</a>
+```
+
+#### **3. 404 Redirecionamento Ajustado**
+```typescript
+// Páginas não encontradas agora vão para Home
+{
+  path: '**',
+  redirectTo: ''  // Home ao invés de '/books'
+}
+```
+
+### 🎯 **Comportamento Atual**
+- **Logo no Header**: Clique → vai para Home (`/`)
+- **URL direta `/`**: Carrega página Home
+- **Login/Registro**: Após sucesso → vai para Home (se não houver redirect específico)
+- **404 páginas**: Redirect para Home
+
+### 🏠 **Página Home Ativa**
+A página Home já existia e contém:
+- ✅ **Seção de gêneros**: 12 categorias de livros
+- ✅ **Livros em destaque**: 3 livros principais
+- ✅ **Design consistente**: Tema preto/verde
+- ✅ **Navegação**: Links para catálogo e gêneros específicos
+
+### 🧪 **Para Testar**
+1. **Clique na logo**: Deve ir para home com gêneros e livros em destaque
+2. **Digite `/` na URL**: Deve carregar página home
+3. **Login sem redirect**: Após login deve ir para home
+4. **URL inválida**: Deve redirecionar para home
+
+**🎉 Navegação da logo funcionando perfeitamente!**

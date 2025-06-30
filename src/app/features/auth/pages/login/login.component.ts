@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { StorageService } from '../../../../core/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +11,30 @@ import { RouterModule } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   isLoading = false;
   showPassword = false;
+  loginMessage = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private storageService: StorageService
+  ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  ngOnInit() {
+    // Verificar se há mensagem de redirecionamento
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.loginMessage = params['message'];
+      }
     });
   }
 
@@ -33,10 +49,23 @@ export class LoginComponent {
 
       console.log('Login data:', loginData);
       
-      // Simular chamada de API
+      // Simular chamada de API e login bem-sucedido
       setTimeout(() => {
         this.isLoading = false;
-        // Aqui você implementaria a lógica de login real
+        
+        // Simular token e dados do usuário
+        this.storageService.setItem('authToken', 'fake-jwt-token-' + Date.now());
+        this.storageService.setItem('userName', loginData.username);
+        this.storageService.setItem('userRole', 'USER');
+        
+        // Verificar se há redirecionamento pendente
+        const redirectUrl = this.storageService.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          this.storageService.removeItem('redirectAfterLogin');
+          this.router.navigate([redirectUrl]);
+        } else {
+          this.router.navigate(['/']);
+        }
       }, 2000);
     } else {
       this.markFormGroupTouched();

@@ -1,0 +1,255 @@
+<!-- ==========================================================================
+     CART COMPONENT TEMPLATE
+     ========================================================================== -->
+
+<div class="cart-container">
+  <!-- Header -->
+  <div class="cart-header">
+    <div class="cart-header-content">
+      <h1 class="cart-title">
+        <i class="fas fa-shopping-cart"></i>
+        Meu Carrinho
+      </h1>
+      <p class="cart-subtitle">
+        Revise seus itens antes de finalizar a compra
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando carrinho...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="cart-content">
+    <div class="cart-content-wrapper">
+      
+      <!-- Empty Cart State -->
+      <div *ngIf="isCartEmpty()" class="empty-cart">
+        <div class="empty-cart-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <h2 class="empty-cart-title">Seu carrinho está vazio</h2>
+        <p class="empty-cart-message">
+          Explore nosso catálogo e adicione livros incríveis ao seu carrinho!
+        </p>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="continueShopping()"
+        >
+          <i class="fas fa-book"></i>
+          Explorar Catálogo
+        </button>
+      </div>
+
+      <!-- Cart with Items -->
+      <div *ngIf="!isCartEmpty()" class="cart-with-items">
+        
+        <!-- Cart Items -->
+        <div class="cart-items-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              Itens no Carrinho ({{ getTotalItems() }})
+            </h2>
+            <button 
+              type="button" 
+              class="btn btn-danger-outline btn-small" 
+              (click)="clearCart()"
+              [disabled]="isUpdating"
+            >
+              <i class="fas fa-trash"></i>
+              Limpar Carrinho
+            </button>
+          </div>
+
+          <div class="cart-items-list">
+            <div 
+              *ngFor="let item of cart.items; trackBy: trackByBookId" 
+              class="cart-item"
+              [class.updating]="isUpdating"
+            >
+              <!-- Book Image -->
+              <div class="item-image">
+                <img 
+                  [src]="item.book.imageUrl || '/assets/images/book-placeholder.jpg'"
+                  [alt]="item.book.title || item.book.name"
+                  class="book-image"
+                  (error)="onImageError($event)"
+                >
+              </div>
+
+              <!-- Book Details -->
+              <div class="item-details">
+                <h3 class="book-title" (click)="goToBookDetails(item.book.id)">
+                  {{ item.book.title || item.book.name }}
+                </h3>
+                <p class="book-author" *ngIf="item.book.author">
+                  <i class="fas fa-user"></i>
+                  {{ item.book.author }}
+                </p>
+                <div class="book-meta">
+                  <span class="book-genre">
+                    <i class="fas fa-tag"></i>
+                    {{ getGenderName(item.book.genderId || item.book.gender_id) }}
+                  </span>
+                  <span class="book-price">
+                    {{ formatPrice(item.book.price) }}
+                  </span>
+                </div>
+                <div class="item-stock" *ngIf="item.book.stock && item.book.stock <= 5">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  Apenas {{ item.book.stock }} em estoque
+                </div>
+              </div>
+
+              <!-- Quantity Controls -->
+              <div class="item-quantity">
+                <label class="quantity-label">Quantidade:</label>
+                <div class="quantity-controls">
+                  <button 
+                    type="button" 
+                    class="quantity-btn" 
+                    (click)="decreaseQuantity(item)"
+                    [disabled]="isUpdating || item.quantity <= 1"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input 
+                    type="number" 
+                    class="quantity-input"
+                    [value]="item.quantity"
+                    (blur)="onQuantityInputChange(item, $event)"
+                    [disabled]="isUpdating"
+                    min="1"
+                    [max]="item.book.stock || 999"
+                  >
+                  <button 
+                    type="button" 
+                    class="quantity-btn" 
+                    (click)="increaseQuantity(item)"
+                    [disabled]="isUpdating || (item.book.stock && item.quantity >= item.book.stock)"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Item Total -->
+              <div class="item-total">
+                <div class="total-label">Subtotal:</div>
+                <div class="total-price">
+                  {{ formatPrice(item.book.price * item.quantity) }}
+                </div>
+              </div>
+
+              <!-- Remove Button -->
+              <div class="item-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-danger-outline btn-small" 
+                  (click)="removeItem(item)"
+                  [disabled]="isUpdating"
+                  title="Remover item"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary-section">
+          <div class="cart-summary">
+            <h3 class="summary-title">Resumo do Pedido</h3>
+            
+            <div class="summary-details">
+              <div class="summary-line">
+                <span class="summary-label">Itens ({{ getTotalItems() }}):</span>
+                <span class="summary-value">{{ formatPrice(getTotalPrice()) }}</span>
+              </div>
+              <div class="summary-line">
+                <span class="summary-label">Frete:</span>
+                <span class="summary-value summary-free">Grátis</span>
+              </div>
+              <div class="summary-line summary-total">
+                <span class="summary-label">Total:</span>
+                <span class="summary-value">{{ formatPrice(getTotalPrice()) }}</span>
+              </div>
+            </div>
+
+            <div class="summary-actions">
+              <!-- Usuário Logado -->
+              <button 
+                *ngIf="isLoggedIn"
+                type="button" 
+                class="btn btn-primary btn-large" 
+                (click)="goToCheckout()"
+                [disabled]="isUpdating || isCartEmpty()"
+              >
+                <i class="fas fa-credit-card"></i>
+                Finalizar Compra
+              </button>
+              
+              <!-- Usuário NÃO Logado - Mostrar opções de autenticação -->
+              <div *ngIf="!isLoggedIn && !isCartEmpty()" class="auth-prompt">
+                <div class="auth-prompt-header">
+                  <i class="fas fa-user-lock"></i>
+                  <h3>Para finalizar sua compra</h3>
+                  <p>Faça login ou crie uma conta para continuar</p>
+                </div>
+                
+                <div class="auth-prompt-actions">
+                  <button 
+                    type="button" 
+                    class="btn btn-primary btn-large" 
+                    (click)="goToLogin()"
+                  >
+                    <i class="fas fa-sign-in-alt"></i>
+                    Fazer Login
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    class="btn btn-outline btn-large" 
+                    (click)="goToRegister()"
+                  >
+                    <i class="fas fa-user-plus"></i>
+                    Criar Conta
+                  </button>
+                </div>
+                
+                <p class="auth-prompt-note">
+                  <i class="fas fa-info-circle"></i>
+                  Seus itens ficarão salvos no carrinho
+                </p>
+              </div>
+              
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-large" 
+                (click)="continueShopping()"
+              >
+                <i class="fas fa-arrow-left"></i>
+                Continuar Comprando
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Updating Overlay -->
+  <div *ngIf="isUpdating" class="updating-overlay">
+    <div class="updating-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</div>

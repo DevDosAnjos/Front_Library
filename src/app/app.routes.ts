@@ -1,65 +1,37 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { AdminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   // Rota padrão - Home
   {
     path: '',
-    loadChildren: () => import('./features/home/home.routes').then(m => m.routes)
+    loadComponent: () => import('./features/home/pages/home.component').then(m => m.HomeComponent),
+    title: 'É-Livro - E-commerce de Livros'
   },
 
   // Rotas de autenticação (públicas)
   {
-    path: 'auth',
-    loadChildren: () => import('./features/auth/auth.routes').then(m => m.routes)
+    path: 'auth/login',
+    loadComponent: () => import('./features/auth/pages/login/login.component').then(m => m.LoginComponent),
+    title: 'Login - É-Livro'
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () => import('./features/auth/pages/register/register.component').then(m => m.RegisterComponent),
+    title: 'Registro - É-Livro'
   },
 
   // Rotas de livros (públicas)
   {
     path: 'books',
-    loadChildren: () => import('./features/books/books.routes').then(m => m.routes)
+    loadComponent: () => import('./features/books/pages/catalog/catalog.component').then(m => m.CatalogComponent),
+    title: 'Catálogo - É-Livro'
   },
 
-  // Rotas de gêneros (públicas)
-  {
-    path: 'genres',
-    loadChildren: () => import('./features/genres/genres.routes').then(m => m.routes)
-  },
-
-  // Rotas de usuário (privadas)
-  {
-    path: 'profile',
-    loadChildren: () => import('./features/users/users.routes').then(m => m.routes),
-    canActivate: [AuthGuard]
-  },
-
-  // Rotas de carrinho (privadas)
+  // Rota de carrinho (pública - acesso livre)
   {
     path: 'cart',
-    loadChildren: () => import('./features/cart/cart.routes').then(m => m.routes),
-    canActivate: [AuthGuard]
-  },
-
-  // Rotas de checkout (privadas)
-  {
-    path: 'checkout',
-    loadChildren: () => import('./features/checkout/checkout.routes').then(m => m.routes),
-    canActivate: [AuthGuard]
-  },
-
-  // Rotas de pedidos (privadas)
-  {
-    path: 'orders',
-    loadChildren: () => import('./features/orders/orders.routes').then(m => m.routes),
-    canActivate: [AuthGuard]
-  },
-
-  // Rotas de administração (apenas admin)
-  {
-    path: 'admin',
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.routes),
-    canActivate: [AuthGuard, AdminGuard]
+    loadComponent: () => import('./features/cart/pages/cart/cart.component').then(m => m.CartComponent),
+    title: 'Carrinho - É-Livro'
   },
 
   // Rota para páginas não encontradas

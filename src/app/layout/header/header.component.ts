@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { StorageService } from '../../core/services/storage.service';
+import { CartService } from '../../core/services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -10,22 +12,33 @@ import { StorageService } from '../../core/services/storage.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   isMenuOpen = false;
   cartItemsCount = 0;
   isLoggedIn = false;
   userName = '';
+  
+  private cartSubscription?: Subscription;
 
   constructor(
+    private storageService: StorageService,
+    private cartService: CartService,
     private router: Router,
-    private storageService: StorageService
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     // Verificar se usuário está logado
     this.checkAuthStatus();
-    // Verificar itens no carrinho
-    this.updateCartCount();
+    
+    // Inicializar contagem do carrinho
+    this.initializeCartCount();
+  }
+
+  ngOnDestroy() {
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
   }
 
   checkAuthStatus() {
@@ -36,11 +49,39 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  updateCartCount() {
-    // Simular contagem de itens no carrinho
-    // Em uma implementação real, isso viria de um serviço
-    const cartItems = this.storageService.getObject<any[]>('cartItems');
-    this.cartItemsCount = cartItems ? cartItems.length : 0;
+  initializeCartCount() {
+    try {
+      // Tentar usar o CartService primeiro
+      if (this.cartService && this.cartService.cart$) {
+        this.cartSubscription = this.cartService.cart$.subscribe({
+          next: (cart) => {
+            this.cartItemsCount = cart?.totalItems || 0;
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.warn('Erro ao subscrever ao carrinho:', error);
+            this.updateCartCountFromStorage();
+          }
+        });
+      } else {
+        // Fallback: carregar do storage diretamente
+        this.updateCartCountFromStorage();
+      }
+    } catch (error) {
+      console.warn('Erro ao inicializar carrinho:', error);
+      this.updateCartCountFromStorage();
+    }
+  }
+
+  updateCartCountFromStorage() {
+    try {
+      const cartData = this.storageService.getObject<any>('shopping_cart');
+      this.cartItemsCount = cartData ? (cartData.totalItems || 0) : 0;
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.warn('Erro ao carregar carrinho do storage:', error);
+      this.cartItemsCount = 0;
+    }
   }
 
   toggleMenu() {
@@ -48,11 +89,9 @@ export class HeaderComponent implements OnInit {
   }
 
   goToCart() {
-    if (this.isLoggedIn) {
-      this.router.navigate(['/cart']);
-    } else {
-      this.router.navigate(['/auth/login']);
-    }
+    console.log('goToCart() chamado - redirecionando para /cart');
+    // Permite acesso ao carrinho para todos os usuários
+    this.router.navigate(['/cart']);
   }
 
   goToProfile() {

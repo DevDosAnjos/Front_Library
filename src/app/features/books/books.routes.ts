@@ -1,5 +1,12 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Rotas serão implementadas conforme necessário
+  {
+    path: '',
+    loadComponent: () => import('./pages/catalog/catalog.component').then(c => c.CatalogComponent)
+  },
+  {
+    path: 'catalog',
+    loadComponent: () => import('./pages/catalog/catalog.component').then(c => c.CatalogComponent)
+  }
 ];

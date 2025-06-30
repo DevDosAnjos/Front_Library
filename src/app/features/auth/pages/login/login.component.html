@@ -3,6 +3,22 @@
     <!-- Logo Section -->
     <div class="auth-header">
       <div class="auth-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">É-<span class="logo-highlight">Livro</span></span>
+      </div>
+      <h1 class="auth-title">Faça seu Login</h1>
+      <p class="auth-subtitle">Entre na sua conta para continuar</p>
+      
+      <!-- Mensagem de redirecionamento -->
+      <div *ngIf="loginMessage" class="redirect-message">
+        <i class="fas fa-info-circle"></i>
+        {{ loginMessage }}
+      </div>
+    </div>
+  <div class="auth-card">
+    <!-- Logo Section -->
+    <div class="auth-header">
+      <div class="auth-logo">
         <span class="logo-icon">�</span>
         <span class="logo-text">É-<span class="logo-highlight">Livro</span></span>
       </div>

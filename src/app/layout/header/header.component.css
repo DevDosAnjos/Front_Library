@@ -385,6 +385,14 @@
   color: var(--danger-color);
 }
 
+/* Mobile cart count */
+.mobile-cart-count {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .nav-links {

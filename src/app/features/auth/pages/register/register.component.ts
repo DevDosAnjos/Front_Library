@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { StorageService } from '../../../../core/services/storage.service';
 
 @Component({
   selector: 'app-register',
@@ -10,19 +11,34 @@ import { RouterModule } from '@angular/router';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   isLoading = false;
   showPassword = false;
   showConfirmPassword = false;
+  registerMessage = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private storageService: StorageService
+  ) {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
       acceptTerms: [false, [Validators.requiredTrue]]
     }, { validators: this.passwordMatchValidator });
+  }
+
+  ngOnInit() {
+    // Verificar se há mensagem de redirecionamento
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.registerMessage = params['message'];
+      }
+    });
   }
 
   passwordMatchValidator(control: AbstractControl): { [key: string]: any } | null {
@@ -46,10 +62,23 @@ export class RegisterComponent {
 
       console.log('Register data:', registerData);
       
-      // Simular chamada de API
+      // Simular chamada de API e registro bem-sucedido
       setTimeout(() => {
         this.isLoading = false;
-        // Aqui você implementaria a lógica de registro real
+        
+        // Simular login automático após registro
+        this.storageService.setItem('authToken', 'fake-jwt-token-' + Date.now());
+        this.storageService.setItem('userName', registerData.username);
+        this.storageService.setItem('userRole', 'USER');
+        
+        // Verificar se há redirecionamento pendente
+        const redirectUrl = this.storageService.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          this.storageService.removeItem('redirectAfterLogin');
+          this.router.navigate([redirectUrl]);
+        } else {
+          this.router.navigate(['/']);
+        }
       }, 2000);
     } else {
       this.markFormGroupTouched();

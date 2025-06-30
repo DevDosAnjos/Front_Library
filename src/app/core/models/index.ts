@@ -36,8 +36,19 @@ export interface Book {
   price: number; // Preço em centavos (ex: 6990 = R$ 69.90)
   gender_id: number;
   status_stock: 'OUT_OF_STOCK' | 'IN_STOCK';
+  // Propriedades adicionais para frontend
+  title?: string; // Alias para name
+  author?: string;
+  imageUrl?: string;
+  description?: string;
+  isbn?: string;
+  publishYear?: number;
+  publisher?: string;
+  pages?: number;
+  stock?: number; // Quantidade em estoque
   // Propriedades calculadas/relacionadas (opcionais)
   gender?: Gender;
+  genderId?: number; // Alias para gender_id
   priceFormatted?: string; // Ex: "R$ 69,90"
 }
 
@@ -102,7 +113,7 @@ export interface CartItem {
 
 export interface Cart {
   items: CartItem[];
-  total: number;
+  totalPrice: number;
   totalItems: number;
 }
 

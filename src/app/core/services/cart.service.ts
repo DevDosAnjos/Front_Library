@@ -8,10 +8,10 @@ import { Book, CartItem, Cart } from '../models';
   providedIn: 'root'
 })
 export class CartService {
+  private readonly CART_STORAGE_KEY = 'shopping_cart';
+  
   private cartSubject = new BehaviorSubject<Cart>(this.getInitialCart());
   public cart$ = this.cartSubject.asObservable();
-
-  private readonly CART_STORAGE_KEY = 'shopping_cart';
 
   constructor(private storageService: StorageService) {
     // Carrega carrinho do storage na inicialização
@@ -98,7 +98,7 @@ export class CartService {
    * Obtém o total do carrinho
    */
   getCartTotal(): number {
-    return this.cartSubject.value.total;
+    return this.cartSubject.value.totalPrice;
   }
 
   /**
@@ -122,7 +122,7 @@ export class CartService {
   private updateCart(cart: Cart): void {
     // Recalcula totais
     cart.totalItems = cart.items.reduce((total, item) => total + item.quantity, 0);
-    cart.total = cart.items.reduce((total, item) => total + item.subtotal, 0);
+    cart.totalPrice = cart.items.reduce((total, item) => total + item.subtotal, 0);
 
     // Atualiza subject e storage
     this.cartSubject.next(cart);
@@ -152,7 +152,7 @@ export class CartService {
   private getInitialCart(): Cart {
     return {
       items: [],
-      total: 0,
+      totalPrice: 0,
       totalItems: 0
     };
   }
@@ -173,7 +173,7 @@ export class CartService {
    */
   getCartSummary(): {
     items: {book_id: number, quantity: number}[],
-    total: number,
+    totalPrice: number,
     totalItems: number
   } {
     const cart = this.cartSubject.value;
@@ -182,7 +182,7 @@ export class CartService {
         book_id: item.book.id,
         quantity: item.quantity
       })),
-      total: cart.total,
+      totalPrice: cart.totalPrice,
       totalItems: cart.totalItems
     };
   }
