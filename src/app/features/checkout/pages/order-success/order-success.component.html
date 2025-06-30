@@ -1,0 +1,239 @@
+<!-- ==========================================================================
+     ORDER SUCCESS COMPONENT TEMPLATE
+     ========================================================================== -->
+
+<div class="order-success-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando dados do pedido...</p>
+  </div>
+
+  <!-- Success Content -->
+  <div *ngIf="!isLoading && orderData" class="success-content">
+    <!-- Header -->
+    <div class="success-header">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1 class="success-title">Pedido Confirmado!</h1>
+      <p class="success-subtitle">
+        Seu pedido foi processado com sucesso. Você receberá um e-mail de confirmação em breve.
+      </p>
+    </div>
+
+    <!-- Order Info -->
+    <div class="order-info">
+      <div class="info-card">
+        <h2 class="info-title">
+          <i class="fas fa-receipt"></i>
+          Detalhes do Pedido
+        </h2>
+        
+        <div class="order-details">
+          <div class="detail-row">
+            <span class="detail-label">Número do Pedido:</span>
+            <span class="detail-value">{{ orderId }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Data do Pedido:</span>
+            <span class="detail-value">{{ orderData.orderDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Forma de Pagamento:</span>
+            <span class="detail-value">
+              {{ orderData.payment.method === 'credit_card' ? 'Cartão de Crédito' : 'PIX' }}
+              <span *ngIf="orderData.payment.method === 'credit_card'">
+                - {{ orderData.payment.creditCard.installments }}x
+              </span>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value status-confirmed">Confirmado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="info-card">
+        <h3 class="info-subtitle">
+          <i class="fas fa-user"></i>
+          Dados do Cliente
+        </h3>
+        <div class="customer-info">
+          <p><strong>Nome:</strong> {{ orderData.personalData.fullName }}</p>
+          <p><strong>E-mail:</strong> {{ orderData.personalData.email }}</p>
+          <p><strong>Telefone:</strong> {{ orderData.personalData.phone }}</p>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="info-card">
+        <h3 class="info-subtitle">
+          <i class="fas fa-map-marker-alt"></i>
+          Endereço de Entrega
+        </h3>
+        <div class="address-info">
+          <p>{{ orderData.shippingAddress.street }}, {{ orderData.shippingAddress.number }}</p>
+          <p *ngIf="orderData.shippingAddress.complement">{{ orderData.shippingAddress.complement }}</p>
+          <p>{{ orderData.shippingAddress.neighborhood }}</p>
+          <p>{{ orderData.shippingAddress.city }} - {{ orderData.shippingAddress.state }}</p>
+          <p>CEP: {{ orderData.shippingAddress.cep }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="order-items">
+      <h2 class="items-title">
+        <i class="fas fa-books"></i>
+        Itens do Pedido
+      </h2>
+      
+      <div class="items-list">
+        <div 
+          *ngFor="let item of orderData.items" 
+          class="order-item"
+        >
+          <div class="item-image">
+            <img 
+              [src]="item.book.imageUrl || '/assets/images/book-placeholder.jpg'" 
+              [alt]="item.book.name"
+            />
+          </div>
+          <div class="item-details">
+            <h4 class="item-title">{{ item.book.name }}</h4>
+            <p class="item-author">{{ item.book.author || 'Autor não informado' }}</p>
+            <p class="item-genre">{{ getGenderName(item.book.gender_id) }}</p>
+            <div class="item-quantity">
+              <span class="quantity-label">Quantidade:</span>
+              <span class="quantity-value">{{ item.quantity }}</span>
+            </div>
+          </div>
+          <div class="item-price">
+            <div class="unit-price">{{ formatPrice(item.book.price) }} cada</div>
+            <div class="total-price">{{ formatPrice(item.subtotal) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Total -->
+      <div class="order-total">
+        <div class="total-row">
+          <span class="total-label">Subtotal ({{ orderData.totalItems }} {{ orderData.totalItems === 1 ? 'item' : 'itens' }}):</span>
+          <span class="total-value">{{ formatPrice(orderData.totalPrice) }}</span>
+        </div>
+        <div class="total-row">
+          <span class="total-label">Frete:</span>
+          <span class="total-value total-free">Grátis</span>
+        </div>
+        <div class="total-row final-total">
+          <span class="total-label">Total Pago:</span>
+          <span class="total-value">{{ formatPrice(orderData.totalPrice) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps">
+      <h2 class="steps-title">
+        <i class="fas fa-clock"></i>
+        Próximos Passos
+      </h2>
+      
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="step-content">
+            <h4>Confirmação por E-mail</h4>
+            <p>Você receberá um e-mail de confirmação com todos os detalhes do pedido.</p>
+          </div>
+        </div>
+        
+        <div class="step-item">
+          <div class="step-icon">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="step-content">
+            <h4>Preparação do Pedido</h4>
+            <p>Seus livros serão separados e preparados para envio em até 1 dia útil.</p>
+          </div>
+        </div>
+        
+        <div class="step-item">
+          <div class="step-icon">
+            <i class="fas fa-shipping-fast"></i>
+          </div>
+          <div class="step-content">
+            <h4>Envio</h4>
+            <p>O pedido será enviado pelos Correios e você receberá o código de rastreamento.</p>
+          </div>
+        </div>
+        
+        <div class="step-item">
+          <div class="step-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <div class="step-content">
+            <h4>Entrega</h4>
+            <p>Receba seus livros no endereço informado em até 7 dias úteis.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-buttons">
+      <button 
+        type="button" 
+        class="btn btn-outline" 
+        (click)="printOrder()"
+      >
+        <i class="fas fa-print"></i>
+        Imprimir Pedido
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="continueShopping()"
+      >
+        <i class="fas fa-books"></i>
+        Continuar Comprando
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="goToHome()"
+      >
+        <i class="fas fa-home"></i>
+        Ir para Home
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !orderData" class="error-content">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h2 class="error-title">Pedido não encontrado</h2>
+    <p class="error-text">
+      Não foi possível encontrar os dados do pedido. Verifique o número do pedido ou entre em contato conosco.
+    </p>
+    <button 
+      type="button" 
+      class="btn btn-primary" 
+      (click)="goToHome()"
+    >
+      <i class="fas fa-home"></i>
+      Voltar ao Início
+    </button>
+  </div>
+</div>

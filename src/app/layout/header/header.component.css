@@ -144,22 +144,29 @@
   gap: 1rem;
 }
 
-.action-button {
-  position: relative;
-  padding: 0.5rem;
-  background: transparent;
-  border: none;
-  color: var(--white);
-  cursor: pointer;
-  border-radius: 8px;
+/* Link Admin */
+.admin-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
   transition: all 0.3s ease;
+  border: 2px solid #ff6b35;
 }
 
-.action-button:hover {
-  background: var(--secondary-light);
-  color: var(--primary-color);
+.admin-link:hover {
+  background: linear-gradient(135deg, #ff4500 0%, #ff6b35 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
+/* Cart */
 .cart-button {
   position: relative;
 }

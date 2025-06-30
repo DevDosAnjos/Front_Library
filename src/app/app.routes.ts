@@ -34,6 +34,27 @@ export const routes: Routes = [
     title: 'Carrinho - É-Livro'
   },
 
+  // Rota de checkout (protegida - requer autenticação)
+  {
+    path: 'checkout',
+    loadComponent: () => import('./features/checkout/pages/checkout/checkout.component').then(m => m.CheckoutComponent),
+    title: 'Checkout - É-Livro'
+  },
+
+  // Rota de sucesso do pedido (pública)
+  {
+    path: 'order-success',
+    loadComponent: () => import('./features/checkout/pages/order-success/order-success.component').then(m => m.OrderSuccessComponent),
+    title: 'Pedido Confirmado - É-Livro'
+  },
+
+  // Rotas administrativas (protegidas - requer role ADMIN)
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.routes),
+    title: 'Administração - É-Livro'
+  },
+
   // Rota para páginas não encontradas
   {
     path: '**',

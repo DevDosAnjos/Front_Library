@@ -19,6 +19,7 @@ export class AuthService {
     private apiService: ApiService,
     private storageService: StorageService
   ) {
+    console.log('AuthService: Construtor chamado');
     this.checkInitialAuthState();
   }
 
@@ -27,17 +28,57 @@ export class AuthService {
    */
   private checkInitialAuthState(): void {
     const token = this.storageService.getItem('authToken');
-    if (token) {
-      this.getCurrentUser().subscribe({
-        next: (user) => {
-          this.currentUserSubject.next(user);
-          this.isLoggedInSubject.next(true);
-        },
-        error: () => {
-          this.logout();
-        }
-      });
+    const username = this.storageService.getItem('userName');
+    const role = this.storageService.getItem('userRole') as 'ADMIN' | 'USER';
+    
+    if (token && username && role) {
+      // Criar objeto user a partir dos dados do storage
+      const user: User = {
+        id: role === 'ADMIN' ? 1 : 2,
+        username: username,
+        role: role
+      };
+      
+      this.currentUserSubject.next(user);
+      this.isLoggedInSubject.next(true);
     }
+  }
+
+  /**
+   * Login simulado para desenvolvimento (sem backend)
+   */
+  loginMock(username: string, password: string): Observable<User> {
+    console.log('AuthService.loginMock: Método chamado com', username, password);
+    return new Observable(observer => {
+      setTimeout(() => {
+        console.log('AuthService.loginMock: Processando login...');
+        // Simular dados do usuário baseado nas credenciais
+        const role = (username === 'admin' && password === 'admin123') ? 'ADMIN' : 'USER';
+        const token = 'fake-jwt-token-' + Date.now();
+        
+        const user: User = {
+          id: role === 'ADMIN' ? 1 : 2,
+          username: username,
+          role,
+        };
+
+        console.log('AuthService.loginMock: Usuário criado', user);
+
+        // Salva token e dados do usuário
+        this.storageService.setItem('authToken', token);
+        this.storageService.setItem('userName', username);
+        this.storageService.setItem('userRole', role);
+        this.storageService.setObject('currentUser', user);
+        
+        // Atualiza subjects
+        this.currentUserSubject.next(user);
+        this.isLoggedInSubject.next(true);
+
+        console.log('AuthService.loginMock: Login concluído');
+        observer.next(user);
+        observer.complete();
+      }, 2000);
+    });
   }
 
   /**
@@ -67,6 +108,8 @@ export class AuthService {
   logout(): void {
     // Remove dados do storage
     this.storageService.removeItem('authToken');
+    this.storageService.removeItem('userName');
+    this.storageService.removeItem('userRole');
     this.storageService.removeItem('currentUser');
     
     // Limpa subjects

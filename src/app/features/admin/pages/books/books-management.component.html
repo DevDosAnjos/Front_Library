@@ -1,0 +1,413 @@
+<!-- ==========================================================================
+     BOOKS MANAGEMENT COMPONENT TEMPLATE
+     ========================================================================== -->
+
+<div class="books-management">
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <div class="header-info">
+        <button class="btn btn-back" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Voltar ao Dashboard
+        </button>
+        <h1 class="page-title">
+          <i class="fas fa-book"></i>
+          Gerenciamento de Livros
+        </h1>
+        <p class="page-subtitle">Cadastre, edite e gerencie os livros do catálogo</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openForm()">
+          <i class="fas fa-plus"></i>
+          Novo Livro
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando livros...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="management-content">
+    
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="search" class="filter-label">Buscar:</label>
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+            class="filter-input"
+            placeholder="Nome, autor ou descrição..."
+          />
+        </div>
+        
+        <div class="filter-group">
+          <label for="genre-filter" class="filter-label">Gênero:</label>
+          <select
+            id="genre-filter"
+            [(ngModel)]="selectedGenre"
+            (change)="onGenreFilter()"
+            class="filter-select"
+          >
+            <option value="">Todos os gêneros</option>
+            <option *ngFor="let genre of genres" [value]="genre.id">
+              {{ genre.name }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="sort-by" class="filter-label">Ordenar por:</label>
+          <select
+            id="sort-by"
+            [(ngModel)]="sortBy"
+            (change)="onSort()"
+            class="filter-select"
+          >
+            <option value="name">Nome</option>
+            <option value="author">Autor</option>
+            <option value="price">Preço</option>
+            <option value="stock">Estoque</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="sort-order" class="filter-label">Ordem:</label>
+          <select
+            id="sort-order"
+            [(ngModel)]="sortOrder"
+            (change)="onSort()"
+            class="filter-select"
+          >
+            <option value="asc">Crescente</option>
+            <option value="desc">Decrescente</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Info -->
+    <div class="results-info">
+      <p class="results-text">
+        Mostrando {{ filteredBooks.length }} de {{ pagination.totalItems }} livros
+      </p>
+    </div>
+
+    <!-- Books Table -->
+    <div class="table-container">
+      <table class="books-table">
+        <thead>
+          <tr>
+            <th>Livro</th>
+            <th>Autor</th>
+            <th>Gênero</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let book of filteredBooks" class="book-row">
+            <td class="book-info">
+              <div class="book-image">
+                <img 
+                  [src]="book.imageUrl || '/assets/images/book-placeholder.jpg'" 
+                  [alt]="book.name"
+                  onerror="this.src='/assets/images/book-placeholder.jpg'"
+                />
+              </div>
+              <div class="book-details">
+                <h4 class="book-title">{{ book.name }}</h4>
+                <p class="book-isbn" *ngIf="book.isbn">ISBN: {{ book.isbn }}</p>
+                <p class="book-publisher" *ngIf="book.publisher">{{ book.publisher }}</p>
+              </div>
+            </td>
+            <td class="book-author">{{ book.author || 'Não informado' }}</td>
+            <td class="book-genre">{{ getGenreName(book.gender_id) }}</td>
+            <td class="book-price">{{ formatPrice(book.price) }}</td>
+            <td class="book-stock">
+              <span class="stock-value" [class.low-stock]="(book.stock || 0) < 5">
+                {{ book.stock || 0 }}
+              </span>
+            </td>
+            <td class="book-status">
+              <span 
+                class="status-badge" 
+                [class.status-active]="book.status_stock === 'IN_STOCK'"
+                [class.status-inactive]="book.status_stock === 'OUT_OF_STOCK'"
+              >
+                {{ book.status_stock === 'IN_STOCK' ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td class="book-actions">
+              <div class="action-buttons">
+                <button 
+                  class="btn btn-small btn-outline" 
+                  (click)="openForm(book)"
+                  title="Editar livro"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button 
+                  class="btn btn-small" 
+                  [class.btn-success]="book.status_stock === 'OUT_OF_STOCK'"
+                  [class.btn-warning]="book.status_stock === 'IN_STOCK'"
+                  (click)="toggleBookStatus(book)"
+                  [title]="book.status_stock === 'IN_STOCK' ? 'Desativar livro' : 'Ativar livro'"
+                >
+                  <i class="fas" [class.fa-toggle-on]="book.status_stock === 'IN_STOCK'" [class.fa-toggle-off]="book.status_stock === 'OUT_OF_STOCK'"></i>
+                </button>
+                <button 
+                  class="btn btn-small btn-danger" 
+                  (click)="deleteBook(book)"
+                  title="Excluir livro"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Empty State -->
+      <div *ngIf="filteredBooks.length === 0" class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <h3>Nenhum livro encontrado</h3>
+        <p>Tente ajustar os filtros ou cadastre um novo livro.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="pagination.totalPages > 1" class="pagination">
+      <button 
+        class="btn btn-outline btn-small" 
+        (click)="changePage(pagination.page - 1)"
+        [disabled]="pagination.page === 1"
+      >
+        <i class="fas fa-chevron-left"></i>
+        Anterior
+      </button>
+      
+      <div class="page-numbers">
+        <button 
+          *ngFor="let page of [].constructor(pagination.totalPages); let i = index"
+          class="btn btn-small"
+          [class.btn-primary]="i + 1 === pagination.page"
+          [class.btn-outline]="i + 1 !== pagination.page"
+          (click)="changePage(i + 1)"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+      
+      <button 
+        class="btn btn-outline btn-small" 
+        (click)="changePage(pagination.page + 1)"
+        [disabled]="pagination.page === pagination.totalPages"
+      >
+        Próximo
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-book"></i>
+          {{ editingBook ? 'Editar Livro' : 'Novo Livro' }}
+        </h2>
+        <button class="btn btn-close" (click)="closeForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="bookForm" (ngSubmit)="saveBook()" class="modal-form">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="name" class="form-label">Nome do Livro *</label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="form-input"
+              [class.error]="getFieldError('name')"
+              placeholder="Digite o nome do livro"
+            />
+            <div class="form-error" *ngIf="getFieldError('name')">
+              {{ getFieldError('name') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="author" class="form-label">Autor *</label>
+            <input
+              id="author"
+              type="text"
+              formControlName="author"
+              class="form-input"
+              [class.error]="getFieldError('author')"
+              placeholder="Digite o nome do autor"
+            />
+            <div class="form-error" *ngIf="getFieldError('author')">
+              {{ getFieldError('author') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender_id" class="form-label">Gênero *</label>
+            <select
+              id="gender_id"
+              formControlName="gender_id"
+              class="form-select"
+              [class.error]="getFieldError('gender_id')"
+            >
+              <option value="">Selecione um gênero</option>
+              <option *ngFor="let genre of genres" [value]="genre.id">
+                {{ genre.name }}
+              </option>
+            </select>
+            <div class="form-error" *ngIf="getFieldError('gender_id')">
+              {{ getFieldError('gender_id') }}
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="description" class="form-label">Descrição *</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              class="form-textarea"
+              [class.error]="getFieldError('description')"
+              placeholder="Digite a descrição do livro"
+              rows="4"
+            ></textarea>
+            <div class="form-error" *ngIf="getFieldError('description')">
+              {{ getFieldError('description') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="price" class="form-label">Preço (R$) *</label>
+            <input
+              id="price"
+              type="number"
+              formControlName="price"
+              class="form-input"
+              [class.error]="getFieldError('price')"
+              placeholder="0,00"
+              step="0.01"
+              min="0"
+            />
+            <div class="form-error" *ngIf="getFieldError('price')">
+              {{ getFieldError('price') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="stock" class="form-label">Estoque *</label>
+            <input
+              id="stock"
+              type="number"
+              formControlName="stock"
+              class="form-input"
+              [class.error]="getFieldError('stock')"
+              placeholder="0"
+              min="0"
+            />
+            <div class="form-error" *ngIf="getFieldError('stock')">
+              {{ getFieldError('stock') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="isbn" class="form-label">ISBN</label>
+            <input
+              id="isbn"
+              type="text"
+              formControlName="isbn"
+              class="form-input"
+              placeholder="978-85-123-4567-8"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="publisher" class="form-label">Editora</label>
+            <input
+              id="publisher"
+              type="text"
+              formControlName="publisher"
+              class="form-input"
+              placeholder="Nome da editora"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="publishedYear" class="form-label">Ano de Publicação</label>
+            <input
+              id="publishedYear"
+              type="number"
+              formControlName="publishedYear"
+              class="form-input"
+              [min]="1000"
+              [max]="currentYear"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="pages" class="form-label">Páginas</label>
+            <input
+              id="pages"
+              type="number"
+              formControlName="pages"
+              class="form-input"
+              placeholder="0"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="imageUrl" class="form-label">URL da Imagem</label>
+            <input
+              id="imageUrl"
+              type="url"
+              formControlName="imageUrl"
+              class="form-input"
+              placeholder="https://exemplo.com/imagem.jpg"
+            />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeForm()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="!bookForm.valid || isSaving"
+          >
+            <i class="fas fa-spinner fa-spin" *ngIf="isSaving"></i>
+            <i class="fas fa-save" *ngIf="!isSaving"></i>
+            {{ isSaving ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

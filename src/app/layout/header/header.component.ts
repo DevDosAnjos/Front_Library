@@ -4,6 +4,8 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { StorageService } from '../../core/services/storage.service';
 import { CartService } from '../../core/services/cart.service';
+import { SimpleAuthService } from '../../core/services/simple-auth.service';
+import { User } from '../../core/models';
 
 @Component({
   selector: 'app-header',
@@ -17,19 +19,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartItemsCount = 0;
   isLoggedIn = false;
   userName = '';
+  currentUser: User | null = null;
   
   private cartSubscription?: Subscription;
+  private authSubscription?: Subscription;
 
   constructor(
     private storageService: StorageService,
     private cartService: CartService,
+    private authService: SimpleAuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Verificar se usuário está logado
-    this.checkAuthStatus();
+    // Subscrever mudanças de autenticação
+    this.subscribeToAuthChanges();
     
     // Inicializar contagem do carrinho
     this.initializeCartCount();
@@ -39,14 +44,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+
+  private subscribeToAuthChanges() {
+    this.authSubscription = this.authService.currentUser$.subscribe({
+      next: (user: any) => {
+        this.currentUser = user;
+        this.isLoggedIn = !!user;
+        this.userName = user?.username || '';
+        this.cdr.detectChanges();
+        console.log('Header: Estado de autenticação atualizado', { isLoggedIn: this.isLoggedIn, userName: this.userName, isAdmin: this.isAdmin() });
+      },
+      error: (error: any) => {
+        console.error('Erro ao subscrever mudanças de autenticação:', error);
+      }
+    });
   }
 
   checkAuthStatus() {
-    const token = this.storageService.getItem('authToken');
-    this.isLoggedIn = !!token;
-    if (this.isLoggedIn) {
-      this.userName = this.storageService.getItem('userName') || 'Usuário';
-    }
+    // Este método não é mais necessário, pois agora reagimos automaticamente às mudanças
+    // Mantendo por compatibilidade, mas delegando para o AuthService
+    this.currentUser = this.authService.getCurrentUserData();
+    this.isLoggedIn = this.authService.isAuthenticated();
+    this.userName = this.currentUser?.username || '';
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   initializeCartCount() {
@@ -103,12 +130,81 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    console.log('Header: Executando logout');
+    this.authService.logout();
+    // Solução temporária: recarregar página para garantir limpeza completa do estado
+    window.location.href = '/';
+  }
+
+  onAdminLinkClick(event?: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    console.log('Header: Link Admin clicado');
+    console.log('Header: isAuthenticated?', this.authService.isAuthenticated());
+    console.log('Header: isAdmin?', this.authService.isAdmin());
+    console.log('Header: Tentando navegar para /admin');
+    
+    // Navegar programaticamente para garantir que funcione
+    this.router.navigate(['/admin']).then(
+      (success) => console.log('Header: Navegação bem-sucedida:', success),
+      (error) => console.error('Header: Erro na navegação:', error)
+    );
+  }
+
+  testAdminNavigation() {
+    console.log('=== TESTE DE NAVEGAÇÃO ADMIN ===');
+    console.log('Estado de autenticação:', {
+      isAuthenticated: this.authService.isAuthenticated(),
+      isAdmin: this.authService.isAdmin(),
+      currentUser: this.authService.getCurrentUserData()
+    });
+    
+    console.log('Tentando navegar para /admin...');
+    this.router.navigate(['/admin']).then(
+      (success) => {
+        console.log('Navegação para /admin bem-sucedida:', success);
+        console.log('URL atual:', this.router.url);
+      },
+      (error) => {
+        console.error('Erro na navegação para /admin:', error);
+      }
+    );
+  }
+
+  // Método de debug temporário
+  debugAuthState() {
+    console.log('=== DEBUG AUTH STATE ===');
+    console.log('Header component state:', {
+      isLoggedIn: this.isLoggedIn,
+      userName: this.userName,
+      currentUser: this.currentUser,
+      isAdmin: this.isAdmin()
+    });
+    console.log('AuthService state:', {
+      isAuthenticated: this.authService.isAuthenticated(),
+      isAdmin: this.authService.isAdmin(),
+      currentUserData: this.authService.getCurrentUserData(),
+      currentUser: this.authService.getCurrentUser()
+    });
+    console.log('Storage data:', {
+      authToken: this.storageService.getItem('authToken'),
+      userName: this.storageService.getItem('userName'),
+      userRole: this.storageService.getItem('userRole'),
+      currentUser: this.storageService.getObject('currentUser')
+    });
+    console.log('=========================');
+  }
+
+  // Método para limpar storage (debug)
+  clearAuthData() {
+    console.log('=== LIMPANDO DADOS DE AUTH ===');
     this.storageService.removeItem('authToken');
     this.storageService.removeItem('userName');
     this.storageService.removeItem('userRole');
-    this.isLoggedIn = false;
-    this.userName = '';
-    this.router.navigate(['/']);
+    this.storageService.removeItem('currentUser');
+    this.authService.logout();
+    console.log('Dados limpos! Recarregue a página.');
   }
 
   // Gêneros populares para o dropdown - baseados nos dados reais

@@ -1,29 +1,38 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
+import { SimpleAuthService } from '../services/simple-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminGuard implements CanActivate {
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: SimpleAuthService
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     
-    // Verifica se existe token no localStorage
-    const token = localStorage.getItem('authToken');
-    const userRole = localStorage.getItem('userRole');
+    console.log('AdminGuard: canActivate chamado para rota:', state.url);
+    console.log('AdminGuard: isAuthenticated?', this.authService.isAuthenticated());
+    console.log('AdminGuard: isAdmin?', this.authService.isAdmin());
     
-    if (token && userRole === 'ADMIN') {
+    // Verifica se usuário está logado e é admin
+    if (this.authService.isAuthenticated() && this.authService.isAdmin()) {
+      console.log('AdminGuard: Acesso autorizado');
       return true;
     }
 
-    // Redireciona para home se não for admin
-    this.router.navigate(['/']);
+    console.log('AdminGuard: Acesso negado, redirecionando para login');
+    // Redireciona para login se não estiver autenticado ou não for admin
+    this.router.navigate(['/auth/login'], {
+      queryParams: { message: 'Acesso restrito a administradores.' }
+    });
     return false;
   }
 }

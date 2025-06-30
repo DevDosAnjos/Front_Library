@@ -1,0 +1,631 @@
+/* ==========================================================================
+   ADMIN DASHBOARD COMPONENT STYLES
+   Padrão visual preto/verde do É-Livro
+   ========================================================================== */
+
+/* Container Principal */
+.admin-dashboard {
+  min-height: calc(100vh - 120px);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #ffffff;
+}
+
+/* Header */
+.dashboard-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border-bottom: 2px solid #00ff66;
+  padding: 2rem 0;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #00ff66;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  color: #cccccc;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  color: #00ff66;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  color: #cccccc;
+  font-size: 1.1rem;
+}
+
+/* Main Content */
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #333333;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  border-color: #00ff66;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 102, 0.2);
+}
+
+.stat-card.revenue {
+  background: linear-gradient(135deg, #00ff66 0%, #00cc52 100%);
+  color: #000000;
+}
+
+.stat-card.revenue .stat-content h3,
+.stat-card.revenue .stat-content p {
+  color: #000000;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.stat-icon.books {
+  background: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+}
+
+.stat-icon.genres {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.stat-icon.users {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.stat-icon.orders {
+  background: rgba(255, 0, 255, 0.2);
+  color: #ff00ff;
+}
+
+.stat-icon.sales {
+  background: rgba(0, 0, 0, 0.2);
+  color: #000000;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #cccccc;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.stat-arrow {
+  color: #666666;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-arrow {
+  color: #00ff66;
+  transform: translateX(5px);
+}
+
+/* Quick Actions */
+.quick-actions {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #00ff66;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.action-btn {
+  background: rgba(42, 42, 42, 0.8);
+  border: 2px solid #333333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.action-btn:hover {
+  border-color: #00ff66;
+  background: rgba(0, 255, 102, 0.1);
+  transform: translateY(-2px);
+}
+
+.action-btn i {
+  font-size: 2rem;
+  color: #00ff66;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+/* Widgets */
+.dashboard-widget {
+  background: rgba(42, 42, 42, 0.8);
+  border-radius: 12px;
+  border: 1px solid #333333;
+  overflow: hidden;
+}
+
+.dashboard-widget.alert-widget {
+  border-color: #ff6b35;
+}
+
+.widget-header {
+  background: rgba(26, 26, 26, 0.8);
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widget-title {
+  font-size: 1.3rem;
+  color: #00ff66;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alert-widget .widget-title {
+  color: #ff6b35;
+}
+
+.widget-content {
+  padding: 1.5rem 2rem;
+}
+
+/* Orders List */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  border: 1px solid #333333;
+}
+
+.order-info {
+  flex: 1;
+}
+
+.order-id {
+  font-weight: 700;
+  color: #00ff66;
+  font-size: 0.9rem;
+}
+
+.order-customer {
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0.3rem 0;
+}
+
+.order-date {
+  color: #cccccc;
+  font-size: 0.8rem;
+}
+
+.order-details {
+  text-align: right;
+}
+
+.order-total {
+  font-weight: 700;
+  color: #00ff66;
+  font-size: 1.1rem;
+}
+
+.order-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+.status-confirmed {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.status-processing {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.status-shipped {
+  background: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+}
+
+.status-delivered {
+  background: rgba(0, 255, 102, 0.2);
+  color: #00ff66;
+}
+
+.status-cancelled {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+/* Books List */
+.books-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.book-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  border: 1px solid #333333;
+}
+
+.book-rank {
+  width: 30px;
+  height: 30px;
+  background: #00ff66;
+  color: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.book-info {
+  flex: 1;
+}
+
+.book-title {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.book-author {
+  color: #cccccc;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.book-stats {
+  text-align: right;
+}
+
+.book-sales {
+  color: #cccccc;
+  font-size: 0.8rem;
+}
+
+.book-revenue {
+  color: #00ff66;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Stock Alert */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #00ff66;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 8px;
+  border: 1px solid #ff6b35;
+}
+
+.stock-title {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.stock-author {
+  color: #cccccc;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.stock-numbers {
+  text-align: right;
+}
+
+.current-stock {
+  color: #ff6b35;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.min-stock {
+  color: #cccccc;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* System Info */
+.system-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #333333;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #cccccc;
+  font-weight: 600;
+}
+
+.info-value {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.status-online {
+  color: #00ff66;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #cccccc;
+  border: 2px solid #666666;
+}
+
+.btn-outline:hover {
+  border-color: #00ff66;
+  color: #00ff66;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-content {
+    padding: 0 1rem;
+  }
+  
+  .dashboard-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 2rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-item,
+  .book-item,
+  .stock-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .order-details,
+  .book-stats,
+  .stock-numbers {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat-card {
+    padding: 1.5rem;
+  }
+  
+  .widget-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .widget-content {
+    padding: 1rem;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Theme Enhancements */
+@media (prefers-color-scheme: dark) {
+  .admin-dashboard {
+    background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .stat-card,
+  .dashboard-widget {
+    border-color: #ffffff;
+  }
+  
+  .order-item,
+  .book-item,
+  .stock-item {
+    border-color: #ffffff;
+  }
+}

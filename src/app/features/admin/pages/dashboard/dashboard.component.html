@@ -1,0 +1,251 @@
+<!-- ==========================================================================
+     ADMIN DASHBOARD COMPONENT TEMPLATE - GERENCIAMENTO FOCADO
+     Dashboard limpo focado apenas no gerenciamento de entidades
+     ========================================================================== -->
+
+<div class="admin-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="welcome-section">
+        <h1 class="dashboard-title">
+          <i class="fas fa-tachometer-alt"></i>
+          Painel de Gerenciamento
+        </h1>
+        <p class="welcome-text" *ngIf="adminUser">
+          Bem-vindo, <strong>{{ adminUser.name }}</strong>!
+        </p>
+        <p class="subtitle">Gerencie todas as entidades do sistema É-Livro</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Carregando painel de gerenciamento...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    
+    <!-- Entity Management Cards -->
+    <div class="management-grid">
+      
+      <!-- Books Management -->
+      <div class="management-card" (click)="navigateToBooks()">
+        <div class="card-header">
+          <div class="card-icon books">
+            <i class="fas fa-book"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">Gerenciar Livros</h3>
+            <p class="card-count">{{ entityStats.totalBooks }} livros cadastrados</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">
+            Adicione, edite ou remova livros do catálogo. 
+            Gerencie informações como título, autor, preço e estoque.
+          </p>
+          <div class="card-actions">
+            <span class="action-item">
+              <i class="fas fa-plus"></i> Adicionar Livro
+            </span>
+            <span class="action-item">
+              <i class="fas fa-edit"></i> Editar Livros
+            </span>
+            <span class="action-item">
+              <i class="fas fa-list"></i> Listar Todos
+            </span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="action-button">
+            Acessar <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Genres Management -->
+      <div class="management-card" (click)="navigateToGenres()">
+        <div class="card-header">
+          <div class="card-icon genres">
+            <i class="fas fa-tags"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">Gerenciar Gêneros</h3>
+            <p class="card-count">{{ entityStats.totalGenres }} gêneros ativos</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">
+            Organize o catálogo por gêneros literários. 
+            Crie categorias para facilitar a navegação dos usuários.
+          </p>
+          <div class="card-actions">
+            <span class="action-item">
+              <i class="fas fa-plus"></i> Novo Gênero
+            </span>
+            <span class="action-item">
+              <i class="fas fa-edit"></i> Editar Gêneros
+            </span>
+            <span class="action-item">
+              <i class="fas fa-sort"></i> Organizar
+            </span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="action-button">
+            Acessar <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Users Management -->
+      <div class="management-card" (click)="navigateToUsers()">
+        <div class="card-header">
+          <div class="card-icon users">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">Gerenciar Usuários</h3>
+            <p class="card-count">{{ entityStats.totalUsers }} usuários registrados</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">
+            Administre contas de usuários, permissões e perfis. 
+            Monitore atividades e gerencie acessos ao sistema.
+          </p>
+          <div class="card-actions">
+            <span class="action-item">
+              <i class="fas fa-user-plus"></i> Novo Usuário
+            </span>
+            <span class="action-item">
+              <i class="fas fa-user-shield"></i> Permissões
+            </span>
+            <span class="action-item">
+              <i class="fas fa-ban"></i> Bloqueios
+            </span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="action-button">
+            Acessar <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Orders Management -->
+      <div class="management-card" (click)="navigateToOrders()">
+        <div class="card-header">
+          <div class="card-icon orders">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">Gerenciar Pedidos</h3>
+            <p class="card-count">{{ entityStats.totalOrders }} pedidos realizados</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">
+            Acompanhe e gerencie todos os pedidos realizados. 
+            Atualize status de entrega e processe pagamentos.
+          </p>
+          <div class="card-actions">
+            <span class="action-item">
+              <i class="fas fa-clock"></i> Pendentes
+            </span>
+            <span class="action-item">
+              <i class="fas fa-truck"></i> Em Andamento
+            </span>
+            <span class="action-item">
+              <i class="fas fa-check"></i> Concluídos
+            </span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="action-button">
+            Acessar <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Sales/Reports Management -->
+      <div class="management-card" (click)="navigateToReports()">
+        <div class="card-header">
+          <div class="card-icon reports">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">Relatórios e Vendas</h3>
+            <p class="card-count">{{ formatPrice(entityStats.totalSales) }} em vendas</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">
+            Analise relatórios de vendas, performance e estatísticas. 
+            Monitore o crescimento e tome decisões estratégicas.
+          </p>
+          <div class="card-actions">
+            <span class="action-item">
+              <i class="fas fa-chart-line"></i> Vendas
+            </span>
+            <span class="action-item">
+              <i class="fas fa-file-alt"></i> Relatórios
+            </span>
+            <span class="action-item">
+              <i class="fas fa-download"></i> Exportar
+            </span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="action-button">
+            Acessar <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Stats Summary -->
+    <div class="stats-summary">
+      <div class="summary-card">
+        <h3 class="summary-title">
+          <i class="fas fa-info-circle"></i>
+          Resumo do Sistema
+        </h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">Total de Entidades:</span>
+            <span class="summary-value">{{ entityStats.totalBooks + entityStats.totalGenres + entityStats.totalUsers }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Última Atualização:</span>
+            <span class="summary-value">{{ currentDate | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Status do Sistema:</span>
+            <span class="summary-value status-online">
+              <i class="fas fa-circle"></i> Online
+            </span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Versão:</span>
+            <span class="summary-value">É-Livro v1.0.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
