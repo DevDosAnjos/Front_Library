@@ -19,9 +19,6 @@
           </button>
         </div>
       </div>
-      <div class="hero-image">
-        <img src="assets/images/hero-books.png" alt="Livros em destaque" />
-      </div>
     </div>
   </div>
 </section>
@@ -63,12 +60,6 @@
         *ngFor="let book of featuredBooks"
         [routerLink]="['/books', book.id]"
       >
-        <div class="book-image">
-          <img [src]="book.image" [alt]="book.title" />
-          <div class="book-discount" *ngIf="book.discount">
-            -{{ book.discount }}%
-          </div>
-        </div>
         
         <div class="book-info">
           <h3 class="book-title">{{ book.title }}</h3>

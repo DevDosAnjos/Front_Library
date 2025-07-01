@@ -17,10 +17,23 @@ import { OrderAdmin, OrderFilters } from '../../../../core/models/api-models';
 export class OrdersManagementComponent implements OnInit {
   orders: OrderAdmin[] = [];
   filteredOrders: OrderAdmin[] = [];
+  paginatedOrders: OrderAdmin[] = [];
   selectedOrder: OrderAdmin | null = null;
   
+  // Form states
+  showEditForm = false;
+  showDetailsModal = false;
+  editingOrder: OrderAdmin | null = null;
   isLoading = true;
+  isSaving = false;
   loadError = false;
+  
+  // Form data
+  orderForm = {
+    status: '',
+    customerName: '',
+    customerEmail: ''
+  };
   
   searchTerm = '';
   selectedStatus = '';
@@ -36,6 +49,9 @@ export class OrdersManagementComponent implements OnInit {
     totalItems: 0,
     totalPages: 0
   };
+
+  // Propriedade para Math no template
+  Math = Math;
 
   constructor(
     private router: Router,
@@ -118,7 +134,7 @@ export class OrdersManagementComponent implements OnInit {
             quantity: 2,
             name: 'Livro de Exemplo 1',
             price: 3500,
-            imageUrl: '/assets/images/book-placeholder.jpg'
+            imageUrl: '/assets/images/img-livros.jpg'
           },
           {
             id: 2,
@@ -126,7 +142,7 @@ export class OrdersManagementComponent implements OnInit {
             quantity: 1,
             name: 'Livro de Exemplo 2',
             price: 1900,
-            imageUrl: '/assets/images/book-placeholder.jpg'
+            imageUrl: '/assets/images/img-livros.jpg'
           }
         ],
         shippingAddress: {
@@ -165,7 +181,7 @@ export class OrdersManagementComponent implements OnInit {
             quantity: 1,
             name: 'Livro de Exemplo 3',
             price: 4500,
-            imageUrl: '/assets/images/book-placeholder.jpg'
+            imageUrl: '/assets/images/img-livros.jpg'
           }
         ],
         shippingAddress: {
@@ -255,14 +271,22 @@ export class OrdersManagementComponent implements OnInit {
       }
     });
     
+    // Aplicar resultado dos filtros
+    this.filteredOrders = filtered;
+    
     // Paginação
-    this.pagination.totalItems = filtered.length;
+    this.pagination.totalItems = this.filteredOrders.length;
     this.pagination.totalPages = Math.ceil(this.pagination.totalItems / this.pagination.itemsPerPage);
+    
+    // Garantir que a página atual não exceda o total de páginas
+    if (this.pagination.page > this.pagination.totalPages) {
+      this.pagination.page = Math.max(1, this.pagination.totalPages);
+    }
     
     const startIndex = (this.pagination.page - 1) * this.pagination.itemsPerPage;
     const endIndex = startIndex + this.pagination.itemsPerPage;
     
-    this.filteredOrders = filtered.slice(startIndex, endIndex);
+    this.paginatedOrders = this.filteredOrders.slice(startIndex, endIndex);
   }
 
   onSearch() {
@@ -302,19 +326,6 @@ export class OrdersManagementComponent implements OnInit {
       // TODO: Implementar atualização no backend via API
       console.log(`Status do pedido ${order.id} atualizado para ${newStatus}`);
     }
-  }
-
-  viewOrder(order: OrderAdmin) {
-    this.selectedOrder = order;
-  }
-
-  closeOrderDetails() {
-    this.selectedOrder = null;
-  }
-
-  printOrder(order: OrderAdmin) {
-    // Implementar funcionalidade de impressão
-    window.print();
   }
 
   refreshOrders() {
@@ -358,6 +369,112 @@ export class OrdersManagementComponent implements OnInit {
 
   getDeliveredOrders(): number {
     return this.orders.filter(order => order.status === 'DELIVERED').length;
+  }
+
+  /**
+   * Handlers para filtros e busca
+   */
+  onSearchChange() {
+    this.pagination.page = 1; // Resetar para primeira página
+    this.applyFiltersAndSort();
+  }
+
+  onFilterChange() {
+    this.pagination.page = 1; // Resetar para primeira página
+    this.applyFiltersAndSort();
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.dateFrom = '';
+    this.dateTo = '';
+    this.pagination.page = 1;
+    this.applyFiltersAndSort();
+  }
+
+  /**
+   * Métodos para modal de edição
+   */
+  openEditForm(order: OrderAdmin) {
+    this.editingOrder = order;
+    this.orderForm = {
+      status: order.statusDisplay,
+      customerName: order.customerName,
+      customerEmail: order.customerEmail
+    };
+    this.showEditForm = true;
+    this.showDetailsModal = false;
+  }
+
+  closeEditForm() {
+    this.showEditForm = false;
+    this.editingOrder = null;
+    this.orderForm = {
+      status: '',
+      customerName: '',
+      customerEmail: ''
+    };
+  }
+
+  /**
+   * Métodos para modal de detalhes
+   */
+  viewOrder(order: OrderAdmin) {
+    this.selectedOrder = order;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedOrder = null;
+  }
+
+  /**
+   * Atualizar pedido
+   */
+  updateOrder() {
+    if (!this.editingOrder) return;
+
+    this.isSaving = true;
+    
+    // Simular salvamento (aqui seria chamada à API)
+    setTimeout(() => {
+      if (this.editingOrder) {
+        // Atualizar o status no pedido original
+        const orderIndex = this.orders.findIndex(o => o.id === this.editingOrder!.id);
+        if (orderIndex !== -1) {
+          this.orders[orderIndex].statusDisplay = this.orderForm.status as any;
+          this.orders[orderIndex].status = this.orderForm.status;
+        }
+        
+        this.applyFiltersAndSort();
+        this.closeEditForm();
+      }
+      this.isSaving = false;
+    }, 1000);
+  }
+
+  /**
+   * Cancelar/deletar pedido
+   */
+  deleteOrder(orderId: number) {
+    if (confirm('Tem certeza que deseja cancelar este pedido?')) {
+      const orderIndex = this.orders.findIndex(o => o.id === orderId);
+      if (orderIndex !== -1) {
+        this.orders[orderIndex].statusDisplay = 'CANCELLED';
+        this.orders[orderIndex].status = 'CANCELLED';
+        this.applyFiltersAndSort();
+      }
+    }
+  }
+
+  /**
+   * Exportar pedidos
+   */
+  exportOrders() {
+    console.log('Exportando pedidos...', this.filteredOrders.length);
+    // Implementar exportação aqui
   }
 
   goBack() {

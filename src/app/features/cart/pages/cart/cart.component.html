@@ -73,10 +73,9 @@
               class="cart-item"
               [class.updating]="isUpdating"
             >
-              <!-- Book Image -->
               <div class="item-image">
                 <img 
-                  [src]="item.book.imageUrl || '/assets/images/book-placeholder.jpg'"
+                  [src]="item.book.imageUrl || '/assets/images/img-livros.jpg'"
                   [alt]="item.book.name"
                   class="book-image"
                   (error)="onImageError($event)"

@@ -355,6 +355,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onImageError(event: any) {
-    event.target.src = '/assets/images/book-placeholder.jpg';
+    event.target.src = '/assets/images/img-livros.jpg';
   }
 }

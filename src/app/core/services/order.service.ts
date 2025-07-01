@@ -199,7 +199,7 @@ export class OrderService {
       // Propriedades obrigatórias para compatibilidade com template
       name: itemResponse.book?.name || `Livro ${itemResponse.bookID}`,
       price: itemResponse.book?.price || 0,
-      imageUrl: itemResponse.book?.imageUrl || '/assets/images/book-placeholder.jpg',
+      imageUrl: itemResponse.book?.imageUrl || '/assets/images/img-livros.jpg',
       book: itemResponse.book ? {
         id: typeof itemResponse.book.id === 'string' ? parseInt(itemResponse.book.id) : itemResponse.book.id,
         name: itemResponse.book.name,

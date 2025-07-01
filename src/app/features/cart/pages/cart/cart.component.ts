@@ -207,6 +207,6 @@ export class CartComponent implements OnInit, OnDestroy {
 
   onImageError(event: Event): void {
     const target = event.target as HTMLImageElement;
-    target.src = '/assets/images/book-placeholder.jpg';
+    target.src = '/assets/images/img-livros.jpg';
   }
 }
