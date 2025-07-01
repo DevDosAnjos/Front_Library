@@ -85,16 +85,31 @@ export class BooksManagementComponent implements OnInit {
   loadData() {
     this.isLoading = true;
     
+    // Carregar dados reais da API
     Promise.all([
       this.bookService.getBooks().toPromise(),
-      this.genderService.getGenders().toPromise()
+      this.genderService.getAllGenders().toPromise()
     ]).then(([books, genres]) => {
-      this.books = books || [];
+      // Mapear books para BookAdmin format para compatibilidade com o template
+      this.books = (books || []).map((book: any) => ({
+        ...book,
+        author: 'Autor não especificado', // Campo padrão, pode ser melhorado futuramente
+        description: 'Descrição não disponível',
+        stock: book.statusStock === 'IN_STOCK' ? 10 : 0, // Valor padrão
+        imageUrl: '',
+        isbn: '',
+        publisher: '',
+        publishYear: new Date().getFullYear(),
+        pages: 0,
+        language: 'Português'
+      }));
       this.genres = genres || [];
       this.applyFilters();
       this.isLoading = false;
     }).catch(error => {
       console.error('Erro ao carregar dados:', error);
+      this.books = [];
+      this.genres = [];
       this.isLoading = false;
     });
   }
@@ -236,54 +251,63 @@ export class BooksManagementComponent implements OnInit {
       this.isSaving = true;
       const formData = this.bookForm.value;
       
-      const bookData: Partial<BookAdmin> = {
+      const bookData = {
         name: formData.name,
-        author: formData.author,
-        description: formData.description,
         price: Math.round(formData.price * 100), // Converter para centavos
-        stock: formData.stock,
         genderID: parseInt(formData.genderID),
-        imageUrl: formData.imageUrl,
-        isbn: formData.isbn,
-        publisher: formData.publisher,
-        publishYear: formData.publishedYear,
-        pages: formData.pages,
-        statusStock: formData.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
+        statusStock: (formData.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK') as 'IN_STOCK' | 'OUT_OF_STOCK'
       };
 
-      // Simular salvamento
-      setTimeout(() => {
-        if (this.editingBook) {
-          // Editar livro existente
-          const index = this.books.findIndex(b => b.id === this.editingBook!.id);
-          if (index >= 0) {
-            this.books[index] = { ...this.books[index], ...bookData };
+      const operation = this.editingBook 
+        ? this.bookService.updateBook(this.editingBook.id, bookData)
+        : this.bookService.createBook(bookData);
+
+      operation.subscribe({
+        next: (savedBook) => {
+          if (this.editingBook) {
+            // Atualizar livro existente na lista local
+            const index = this.books.findIndex(b => b.id === this.editingBook!.id);
+            if (index >= 0) {
+              this.books[index] = {
+                ...savedBook,
+                author: formData.author || 'Autor não especificado',
+                description: formData.description || 'Descrição não disponível',
+                stock: formData.stock || 0,
+                imageUrl: formData.imageUrl || '',
+                isbn: formData.isbn || '',
+                publisher: formData.publisher || '',
+                publishYear: formData.publishedYear || new Date().getFullYear(),
+                pages: formData.pages || 0,
+                language: formData.language || 'Português'
+              };
+            }
+          } else {
+            // Adicionar novo livro à lista local
+            const newBook: BookAdmin = {
+              ...savedBook,
+              author: formData.author || 'Autor não especificado',
+              description: formData.description || 'Descrição não disponível',
+              stock: formData.stock || 0,
+              imageUrl: formData.imageUrl || '',
+              isbn: formData.isbn || '',
+              publisher: formData.publisher || '',
+              publishYear: formData.publishedYear || new Date().getFullYear(),
+              pages: formData.pages || 0,
+              language: formData.language || 'Português'
+            };
+            this.books.push(newBook);
           }
-        } else {
-          // Criar novo livro
-          const newId = Math.max(...this.books.map(b => b.id)) + 1;
-          const newBook: BookAdmin = {
-            id: newId,
-            name: bookData.name!,
-            price: bookData.price!,
-            genderID: bookData.genderID!,
-            statusStock: bookData.statusStock!,
-            author: bookData.author,
-            description: bookData.description,
-            imageUrl: bookData.imageUrl,
-            isbn: bookData.isbn,
-            publisher: bookData.publisher,
-            publishYear: bookData.publishYear,
-            pages: bookData.pages,
-            stock: bookData.stock
-          };
-          this.books.push(newBook);
+          
+          this.applyFilters();
+          this.closeForm();
+          this.isSaving = false;
+        },
+        error: (error) => {
+          console.error('Erro ao salvar livro:', error);
+          this.isSaving = false;
+          // Aqui você pode adicionar uma notificação de erro
         }
-        
-        this.applyFilters();
-        this.closeForm();
-        this.isSaving = false;
-      }, 1000);
+      });
     } else {
       this.markFormGroupTouched();
     }
@@ -291,21 +315,45 @@ export class BooksManagementComponent implements OnInit {
 
   deleteBook(book: BookAdmin) {
     if (confirm(`Tem certeza que deseja excluir o livro "${book.name}"?`)) {
-      const index = this.books.findIndex(b => b.id === book.id);
-      if (index >= 0) {
-        this.books.splice(index, 1);
-        this.applyFilters();
-      }
+      this.bookService.deleteBook(book.id).subscribe({
+        next: () => {
+          const index = this.books.findIndex(b => b.id === book.id);
+          if (index >= 0) {
+            this.books.splice(index, 1);
+            this.applyFilters();
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao deletar livro:', error);
+          // Aqui você pode adicionar uma notificação de erro
+        }
+      });
     }
   }
 
   toggleBookStatus(book: BookAdmin) {
-    const index = this.books.findIndex(b => b.id === book.id);
-    if (index >= 0) {
-      // Alternar status entre IN_STOCK e OUT_OF_STOCK
-      this.books[index].statusStock = this.books[index].statusStock === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
-      this.applyFilters();
-    }
+    const newStatus = book.statusStock === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
+    
+    const updateData = {
+      name: book.name,
+      price: book.price,
+      genderID: book.genderID,
+      statusStock: newStatus as 'IN_STOCK' | 'OUT_OF_STOCK'
+    };
+
+    this.bookService.updateBook(book.id, updateData).subscribe({
+      next: (updatedBook) => {
+        const index = this.books.findIndex(b => b.id === book.id);
+        if (index >= 0) {
+          this.books[index] = { ...this.books[index], ...updatedBook };
+          this.applyFilters();
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao atualizar status do livro:', error);
+        // Aqui você pode adicionar uma notificação de erro
+      }
+    });
   }
 
   formatPrice(price: number): string {

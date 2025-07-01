@@ -9,6 +9,7 @@ import { User, LoginRequest, LoginResponse, RegisterRequest, ApiResponse } from 
   providedIn: 'root'
 })
 export class AuthService {
+  private static instance: AuthService | null = null;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable().pipe(
     distinctUntilChanged((prev, curr) => prev?.username === curr?.username),
@@ -27,8 +28,14 @@ export class AuthService {
     private apiService: ApiService,
     private storageService: StorageService
   ) {
+    // Implementação de singleton para evitar múltiplas instâncias
+    if (AuthService.instance) {
+      return AuthService.instance;
+    }
+    
+    AuthService.instance = this;
+    
     if (!this.initialized) {
-      console.log('AuthService: Construtor chamado');
       this.initialized = true;
       this.checkInitialAuthState();
     }

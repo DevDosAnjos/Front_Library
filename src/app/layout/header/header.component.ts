@@ -59,12 +59,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.isLoggedIn = !!user;
         this.userName = user?.username || '';
         
-        // Só loga se realmente houve mudança
-        if (wasLoggedIn !== this.isLoggedIn || oldUserName !== this.userName) {
+        // Só loga se realmente houve mudança significativa (login/logout)
+        if (wasLoggedIn !== this.isLoggedIn && (wasLoggedIn || this.isLoggedIn)) {
           console.log('Header: Estado de autenticação atualizado', { 
             isLoggedIn: this.isLoggedIn, 
-            userName: this.userName, 
-            isAdmin: this.isAdmin() 
+            userName: this.userName
           });
         }
         

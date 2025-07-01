@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { StorageService } from '../../../../core/services/storage.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { BookService } from '../../../../core/services/book.service';
+import { GenderService } from '../../../../core/services/gender.service';
+import { UserService } from '../../../../core/services/user.service';
+import { OrderService } from '../../../../core/services/order.service';
+import { forkJoin, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -28,7 +33,11 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private storageService: StorageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private bookService: BookService,
+    private genderService: GenderService,
+    private userService: UserService,
+    private orderService: OrderService
   ) {
     // Dashboard admin inicializado
   }
@@ -60,20 +69,67 @@ export class AdminDashboardComponent implements OnInit {
 
   loadDashboardData() {
     this.isLoading = true;
+    console.log('🔄 Carregando dados do dashboard...');
     
-    // Simular carregamento de estatísticas básicas
-    setTimeout(() => {
-      this.loadEntityStats();
-      this.isLoading = false;
-    }, 1000);
+    // Carregar dados reais da API em paralelo com melhor tratamento de erro
+    forkJoin({
+      books: this.bookService.getBooks().pipe(
+        catchError((error) => {
+          console.error('❌ Erro ao carregar livros:', error);
+          return of([]);
+        })
+      ),
+      genders: this.genderService.getAllGenders().pipe(
+        catchError((error) => {
+          console.error('❌ Erro ao carregar gêneros:', error);
+          return of([]);
+        })
+      ),
+      users: this.userService.getAllUsers().pipe(
+        catchError((error) => {
+          console.error('❌ Erro ao carregar usuários:', error);
+          return of([]);
+        })
+      ),
+      orders: this.orderService.getAllOrders().pipe(
+        catchError((error) => {
+          console.error('❌ Erro ao carregar pedidos:', error);
+          return of([]);
+        })
+      )
+    }).subscribe({
+      next: (data) => {
+        console.log('✅ Dados do dashboard carregados:', {
+          books: data.books.length,
+          genders: data.genders.length,
+          users: data.users.length,
+          orders: data.orders.length
+        });
+        
+        this.entityStats.totalBooks = data.books.length;
+        this.entityStats.totalGenres = data.genders.length;
+        this.entityStats.totalUsers = data.users.length;
+        this.entityStats.totalOrders = data.orders.length;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('❌ Erro crítico ao carregar dados do dashboard:', error);
+        // Em caso de erro crítico, carregar dados como zero mas manter funcionalidade
+        this.entityStats.totalBooks = 0;
+        this.entityStats.totalGenres = 0;
+        this.entityStats.totalUsers = 0;
+        this.entityStats.totalOrders = 0;
+        this.isLoading = false;
+      }
+    });
   }
 
   loadEntityStats() {
-    // Simular dados estatísticos básicos das entidades
-    this.entityStats.totalBooks = 50;
-    this.entityStats.totalGenres = 12;
-    this.entityStats.totalUsers = 248;
-    this.entityStats.totalOrders = 89;
+    // Dados de fallback em caso de erro na API
+    this.entityStats.totalBooks = 0;
+    this.entityStats.totalGenres = 0;
+    this.entityStats.totalUsers = 0;
+    this.entityStats.totalOrders = 0;
   }
 
   formatPrice(price: number): string {

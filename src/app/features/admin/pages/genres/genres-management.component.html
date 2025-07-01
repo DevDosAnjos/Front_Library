@@ -109,18 +109,16 @@
               </button>
               <button 
                 class="btn-icon btn-delete" 
-                (click)="deleteGenre(genre)"
-                title="Excluir gênero"
+                (click)="confirmDelete(genre)"
+                title="Desativar gênero"
                 [disabled]="genre.booksCount && genre.booksCount > 0"
               >
-                <i class="fas fa-trash"></i>
+                <i class="fas fa-ban"></i>
               </button>
             </div>
           </div>
           
           <div class="genre-body">
-            <p class="genre-description">{{ genre.description || 'Sem descrição' }}</p>
-            
             <div class="genre-stats">
               <div class="stat-item">
                 <i class="fas fa-book"></i>
@@ -129,6 +127,10 @@
               <div class="stat-item">
                 <i class="fas fa-calendar"></i>
                 <span>{{ genre.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-toggle-on" [class.fa-toggle-off]="!genre.isActive"></i>
+                <span>{{ genre.statusGender }}</span>
               </div>
             </div>
           </div>
@@ -168,19 +170,6 @@
         </div>
 
         <div class="form-group">
-          <label for="genreDescription" class="form-label">Descrição</label>
-          <textarea 
-            id="genreDescription"
-            [(ngModel)]="genreForm.description"
-            name="genreDescription"
-            class="form-textarea"
-            placeholder="Descreva o gênero literário..."
-            rows="3"
-            maxlength="200"
-          ></textarea>
-        </div>
-
-        <div class="form-group">
           <label class="checkbox-label">
             <input 
               type="checkbox" 
@@ -190,6 +179,9 @@
             >
             <span class="checkbox-text">Gênero ativo</span>
           </label>
+          <small class="form-help">
+            Gêneros inativos não aparecerão para os usuários na criação de livros
+          </small>
         </div>
 
         <div class="form-actions">

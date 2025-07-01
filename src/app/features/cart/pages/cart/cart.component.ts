@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,8 @@ import { Cart, CartItem } from '../../../../core/models/api-models';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.css'
+  styleUrl: './cart.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartComponent implements OnInit, OnDestroy {
   cart: Cart = { 
@@ -30,7 +31,8 @@ export class CartComponent implements OnInit, OnDestroy {
   constructor(
     private cartService: CartService,
     private storageService: StorageService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -50,7 +52,7 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   loadCart() {
-    // Remove o setTimeout desnecessário que pode estar causando problemas
+    // Remove subscription anterior se existir
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
@@ -60,10 +62,12 @@ export class CartComponent implements OnInit, OnDestroy {
       next: (cart) => {
         this.cart = cart;
         this.isLoading = false;
+        this.cdr.markForCheck(); // Marca para verificação de mudanças
       },
       error: (error) => {
         console.error('Erro ao carregar carrinho:', error);
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

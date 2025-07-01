@@ -564,6 +564,146 @@
   cursor: not-allowed;
 }
 
+/* Table Layout for Users */
+.users-table {
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #333333;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.8fr 1fr 1.2fr;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
+  border-bottom: 2px solid #00ff66;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #00ff66;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.8fr 1fr 1.2fr;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #333333;
+  transition: all 0.3s ease;
+  align-items: center;
+}
+
+.table-row:hover {
+  background: #252525;
+}
+
+.table-row.inactive {
+  opacity: 0.6;
+  background: #1a1a1a;
+}
+
+.table-cell {
+  display: flex;
+  align-items: center;
+}
+
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00ff66 0%, #00cc52 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.user-username {
+  color: #cccccc;
+  font-size: 0.85rem;
+}
+
+.user-role {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-role.role-admin {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: #ffffff;
+}
+
+.user-role.role-user {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: #ffffff;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.user-status.active {
+  color: #00ff66;
+}
+
+.user-status:not(.active) {
+  color: #ff6b6b;
+}
+
+.user-status i {
+  font-size: 0.6rem;
+}
+
+.orders-count {
+  font-weight: 600;
+  color: #00ff66;
+  font-size: 1rem;
+}
+
+.created-date {
+  color: #cccccc;
+  font-size: 0.85rem;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-content {
@@ -626,6 +766,49 @@
   
   .user-actions {
     flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .btn-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  }
+  
+  .stats-cell,
+  .date-cell {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 2fr 1fr 1.5fr;
+  }
+  
+  .role-cell {
+    display: none;
+  }
+  
+  .user-info-cell {
+    gap: 0.5rem;
+  }
+  
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  .actions-cell {
     gap: 0.25rem;
   }
   

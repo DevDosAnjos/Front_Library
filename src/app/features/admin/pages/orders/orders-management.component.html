@@ -93,7 +93,7 @@
             (change)="onSort()"
             class="filter-select"
           >
-            <option value="created_at">Data do Pedido</option>
+            <option value="createdAt">Data do Pedido</option>
             <option value="total">Valor Total</option>
             <option value="customer">Cliente</option>
             <option value="status">Status</option>
@@ -195,10 +195,10 @@
               </div>
             </td>
             <td class="order-date">
-              {{ formatDate(order.created_at) }}
+              {{ order.createdAtFormatted }}
             </td>
             <td class="order-total">
-              {{ formatPrice(order.total) }}
+              {{ order.totalFormatted }}
             </td>
             <td class="order-status">
               <select 
@@ -306,13 +306,13 @@
         <div class="section">
           <h3 class="section-title">Informações do Pedido</h3>
           <div class="order-details">
-            <p><strong>Data:</strong> {{ formatDate(selectedOrder.created_at) }}</p>
+            <p><strong>Data:</strong> {{ selectedOrder.createdAtFormatted }}</p>
             <p><strong>Status:</strong> 
               <span class="status-badge" [class]="'status-' + selectedOrder.status.toLowerCase()">
                 {{ getStatusLabel(selectedOrder.status) }}
               </span>
             </p>
-            <p><strong>Total:</strong> {{ formatPrice(selectedOrder.total) }}</p>
+            <p><strong>Total:</strong> {{ selectedOrder.totalFormatted }}</p>
           </div>
         </div>
 

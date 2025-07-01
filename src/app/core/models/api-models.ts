@@ -23,6 +23,11 @@ export interface UserResponse {
   id: string;
   username: string;
   userRole: string;
+  email?: string;
+  fullName?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  lastLogin?: string;
 }
 
 // User interface para uso interno do frontend
@@ -30,6 +35,26 @@ export interface User {
   id: number;
   username: string;
   role: 'ADMIN' | 'USER';
+  email?: string;
+  fullName?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  lastLogin?: Date;
+}
+
+// Interfaces para operações CRUD de usuários
+export interface UserCreateRequest {
+  username: string;
+  password: string;
+  fullName: string;
+  // Nota: role é opcional porque o registro público não aceita este campo
+  // O usuário é criado como USER por padrão e pode ser alterado via edição
+}
+
+export interface UserUpdateRequest {
+  username?: string;
+  password?: string;
+  userRole?: 'ADMIN' | 'USER';
 }
 
 // ===== BOOK MODELS =====
@@ -49,10 +74,15 @@ export interface BookUpdateRequest {
 }
 
 export interface BookResponse {
-  id: string;
+  id: number;
   name: string;
   price: number;
-  genderID: number;
+  gender?: {
+    id: number;
+    name: string;
+    status: string;
+  } | null;
+  genderID?: number;
   statusStock: 'OUT_OF_STOCK' | 'IN_STOCK';
 }
 
@@ -96,7 +126,8 @@ export interface GenderUpdateRequest {
 export interface GenderResponse {
   id: string;
   name: string;
-  statusGender: 'INACTIVE' | 'ACTIVE';
+  statusGender?: 'INACTIVE' | 'ACTIVE';
+  status_gender?: 'INACTIVE' | 'ACTIVE'; // Backup para caso o backend use snake_case
 }
 
 // Gender interface para uso interno do frontend
@@ -130,6 +161,13 @@ export interface OrderResponse {
   items: OrderItemResponse[];
   total?: number;
   createdAt?: string;
+  status?: string;
+  user?: {
+    id: string;
+    username: string;
+    fullName?: string;
+    email?: string;
+  };
 }
 
 // Order interface para uso interno do frontend
@@ -139,6 +177,13 @@ export interface Order {
   items: OrderItem[];
   total?: number;
   createdAt?: string;
+  status?: string;
+  user?: {
+    id: number;
+    username: string;
+    fullName?: string;
+    email?: string;
+  };
 }
 
 export interface OrderItem {
@@ -146,6 +191,41 @@ export interface OrderItem {
   bookID: number;
   quantity: number;
   book?: Book;
+  // Propriedades para compatibilidade com template
+  name: string;
+  price: number;
+  imageUrl: string;
+}
+
+// Interface extendida para o dashboard administrativo
+export interface OrderAdmin extends Order {
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  statusDisplay: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  totalFormatted: string;
+  itemsCount: number;
+  createdAtFormatted: string;
+  status: string; // Override to make it non-optional
+  // Propriedades para compatibilidade com template
+  shippingAddress: {
+    street: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+}
+
+// Interface para filtros de pedidos no dashboard
+export interface OrderFilters {
+  search?: string;
+  status?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  username?: string;
 }
 
 // ===== PURCHASE MODELS =====
@@ -180,7 +260,7 @@ export interface Purchase {
 export interface BookFilters {
   search?: string;
   genderID?: number;
-  statusStock?: 'OUT_OF_STOCK' | 'IN_STOCK';
+  statusStock?: 'ALL' | 'OUT_OF_STOCK' | 'IN_STOCK';
   price_min?: number;
   price_max?: number;
 }
@@ -193,6 +273,8 @@ export interface GenderFilters {
 export interface UserFilters {
   search?: string;
   userRole?: 'ADMIN' | 'USER';
+  role?: 'ADMIN' | 'USER';  // Alias para userRole
+  isActive?: boolean;
 }
 
 // ===== CART MODELS =====

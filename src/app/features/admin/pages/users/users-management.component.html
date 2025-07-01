@@ -45,7 +45,7 @@
           <i class="fas fa-search"></i>
           <input 
             type="text" 
-            placeholder="Buscar por nome, email ou username..."
+            placeholder="Buscar por nome ou username..."
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
             class="search-input"
@@ -90,50 +90,54 @@
         </button>
       </div>
 
-      <div *ngIf="filteredUsers.length > 0" class="users-grid">
+      <!-- Lista Simplificada -->
+      <div *ngIf="filteredUsers.length > 0" class="users-table">
+        <div class="table-header">
+          <div class="header-cell user-info-header">Usuário</div>
+          <div class="header-cell role-header">Tipo</div>
+          <div class="header-cell status-header">Status</div>
+          <div class="header-cell stats-header">Pedidos</div>
+          <div class="header-cell date-header">Cadastro</div>
+          <div class="header-cell actions-header">Ações</div>
+        </div>
+        
         <div 
           *ngFor="let user of filteredUsers" 
-          class="user-card"
-          [class.inactive]="!user.isActive"
+          class="table-row"
+          [class.inactive]="user.isActive === false"
         >
-          <div class="user-header">
+          <div class="table-cell user-info-cell">
             <div class="user-avatar">
               <i class="fas fa-user"></i>
             </div>
-            <div class="user-info">
-              <h3 class="user-name">{{ user.fullName }}</h3>
-              <p class="user-username">{{ '@' + user.username }}</p>
-              <p class="user-email">{{ user.email }}</p>
-            </div>
-            <div class="user-badges">
-              <span class="user-role" [class]="getRoleClass(user.role)">
-                {{ getRoleText(user.role) }}
-              </span>
-              <span class="user-status" [class.active]="user.isActive">
-                <i class="fas fa-circle"></i>
-                {{ user.isActive ? 'Ativo' : 'Inativo' }}
-              </span>
+            <div class="user-details">
+              <div class="user-name">{{ user.fullName || user.username }}</div>
+              <div class="user-username">{{ '@' + user.username }}</div>
             </div>
           </div>
           
-          <div class="user-body">
-            <div class="user-stats">
-              <div class="stat-item">
-                <i class="fas fa-shopping-cart"></i>
-                <span>{{ user.ordersCount || 0 }} pedidos</span>
-              </div>
-              <div class="stat-item">
-                <i class="fas fa-calendar"></i>
-                <span>Desde {{ user.createdAt | date:'dd/MM/yyyy' }}</span>
-              </div>
-              <div class="stat-item" *ngIf="user.lastLogin">
-                <i class="fas fa-clock"></i>
-                <span>Último login: {{ user.lastLogin | date:'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-            </div>
+          <div class="table-cell role-cell">
+            <span class="user-role" [class]="getRoleClass(user.role)">
+              {{ getRoleText(user.role) }}
+            </span>
           </div>
-
-          <div class="user-actions">
+          
+          <div class="table-cell status-cell">
+            <span class="user-status" [class.active]="user.isActive !== false">
+              <i class="fas fa-circle"></i>
+              {{ user.isActive !== false ? 'Ativo' : 'Inativo' }}
+            </span>
+          </div>
+          
+          <div class="table-cell stats-cell">
+            <span class="orders-count">{{ user.ordersCount || 0 }}</span>
+          </div>
+          
+          <div class="table-cell date-cell">
+            <span class="created-date">{{ user.createdAt | date:'dd/MM/yyyy' }}</span>
+          </div>
+          
+          <div class="table-cell actions-cell">
             <button 
               class="btn-icon btn-edit" 
               (click)="openEditForm(user)"
@@ -141,20 +145,7 @@
             >
               <i class="fas fa-edit"></i>
             </button>
-            <button 
-              class="btn-icon btn-password" 
-              (click)="resetPassword(user)"
-              title="Resetar senha"
-            >
-              <i class="fas fa-key"></i>
-            </button>
-            <button 
-              class="btn-icon btn-toggle" 
-              (click)="toggleUserStatus(user)"
-              [title]="user.isActive ? 'Desativar usuário' : 'Ativar usuário'"
-            >
-              <i class="fas" [class.fa-eye-slash]="user.isActive" [class.fa-eye]="!user.isActive"></i>
-            </button>
+
             <button 
               class="btn-icon btn-delete" 
               (click)="deleteUser(user)"
@@ -215,21 +206,6 @@
               required
               maxlength="50"
               pattern="[a-zA-Z0-9._-]+"
-            >
-          </div>
-          <div class="form-group">
-            <label for="userEmail" class="form-label">
-              Email <span class="required">*</span>
-            </label>
-            <input 
-              type="email" 
-              id="userEmail"
-              [(ngModel)]="userForm.email"
-              name="userEmail"
-              class="form-input"
-              placeholder="joao@email.com"
-              required
-              maxlength="100"
             >
           </div>
         </div>
@@ -305,7 +281,7 @@
           <button 
             type="submit" 
             class="btn btn-primary" 
-            [disabled]="isSaving || !userForm.username.trim() || !userForm.email.trim() || !userForm.fullName.trim()"
+            [disabled]="isSaving || !userForm.username.trim() || !userForm.fullName.trim()"
           >
             <i class="fas fa-spinner fa-spin" *ngIf="isSaving"></i>
             <i class="fas fa-save" *ngIf="!isSaving"></i>
